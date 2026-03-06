@@ -290,18 +290,18 @@ async function captureAndPixelate(video) {
   cc.drawImage(video, srcX, srcY, srcSize, srcSize, 0, 0, 200, 200);
   cc.restore();
 
-  // ── 4. Reduce to 48×48 (pixelation resolution) ───────────
+  // ── 4. Reduce to 12×12 (ULTRA-BLOCKY pixel art) ──────────
   const small = document.createElement('canvas');
-  small.width = 48; small.height = 48;
+  small.width = 12; small.height = 12;
   const sc = small.getContext('2d');
   sc.imageSmoothingEnabled = true;
   sc.imageSmoothingQuality = 'low';
-  sc.drawImage(crop, 0, 0, 48, 48);
+  sc.drawImage(crop, 0, 0, 12, 12);
 
-  // ── 5. Color quantisation: ~32 colours (step = 32) ────────
-  const id   = sc.getImageData(0, 0, 48, 48);
+  // ── 5. Color quantisation: 8-12 colours (step = 85) ───────
+  const id   = sc.getImageData(0, 0, 12, 12);
   const d    = id.data;
-  const step = 32; // 256/32 = 8 levels/ch  →  moderate pixel palette
+  const step = 85; // 3 levels/ch (0,85,170,255) → ~27 combos, naturally clusters to 8-12 colors
   for (let i = 0; i < d.length; i += 4) {
     d[i]   = Math.min(255, Math.round(d[i]   / step) * step);
     d[i+1] = Math.min(255, Math.round(d[i+1] / step) * step);
@@ -811,19 +811,106 @@ class Fighter {
       ctx.arc(hcx, hcy, hR, 0, Math.PI * 2);
       ctx.stroke();
 
+      // ── CARTOON FEATURES ON TOP ───────────────────────────
+      // Bright white eyes with black pupils
+      const eyeY = hcy - hR * 0.15;
+      const eyeR = hR * 0.18;
+      const eyeXL = hcx - hR * 0.3;
+      const eyeXR = hcx + hR * 0.3;
+
+      // Left eye
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#ffffff';
+      ctx.shadowBlur = 6 * SCALE;
+      ctx.beginPath();
+      ctx.arc(eyeXL, eyeY, eyeR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#111';
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.arc(eyeXL, eyeY, eyeR * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Right eye
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#ffffff';
+      ctx.shadowBlur = 6 * SCALE;
+      ctx.beginPath();
+      ctx.arc(eyeXR, eyeY, eyeR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#111';
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.arc(eyeXR, eyeY, eyeR * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Reactive eyebrows
+      const browY = hcy - hR * 0.45;
+      ctx.strokeStyle = p.body;
+      ctx.lineWidth = 2.5 * SCALE;
+      ctx.lineCap = 'round';
+
+      if (this.stunTimer > 0) {
+        // Curved up (∩) when stunned
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - eyeR * 1.2, browY);
+        ctx.quadraticCurveTo(eyeXL, browY - eyeR * 0.5, eyeXL + eyeR * 1.2, browY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(eyeXR - eyeR * 1.2, browY);
+        ctx.quadraticCurveTo(eyeXR, browY - eyeR * 0.5, eyeXR + eyeR * 1.2, browY);
+        ctx.stroke();
+      } else if (this.attacking) {
+        // Angry V when attacking
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - eyeR * 1.2, browY + eyeR * 0.3);
+        ctx.lineTo(eyeXL, browY - eyeR * 0.3);
+        ctx.lineTo(eyeXL + eyeR * 1.2, browY + eyeR * 0.3);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(eyeXR - eyeR * 1.2, browY + eyeR * 0.3);
+        ctx.lineTo(eyeXR, browY - eyeR * 0.3);
+        ctx.lineTo(eyeXR + eyeR * 1.2, browY + eyeR * 0.3);
+        ctx.stroke();
+      } else {
+        // Normal straight brows
+        ctx.beginPath();
+        ctx.moveTo(eyeXL - eyeR * 1.2, browY);
+        ctx.lineTo(eyeXL + eyeR * 1.2, browY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(eyeXR - eyeR * 1.2, browY);
+        ctx.lineTo(eyeXR + eyeR * 1.2, browY);
+        ctx.stroke();
+      }
+
     } else {
-      // Default chibi face
+      // ── Default chibi face (CIRCULAR with helmet hair) ──
+      const hcx = 0;
+      const hcy = headY + headH / 2;
+      const hR  = Math.min(headW, headH) * 0.48;
+
+      // Skin circle
       ctx.fillStyle = p.skin;
-      this._rr(-headW / 2, headY, headW, headH, headH * 0.15);
+      ctx.beginPath();
+      ctx.arc(hcx, hcy, hR, 0, Math.PI * 2);
+      ctx.fill();
 
-      // Hair (top ~25%)
-      ctx.fillStyle = p.hair;
-      this._rr(-headW / 2, headY, headW, headH * 0.28, [headH * 0.15, headH * 0.15, 0, 0]);
+      // Hair helmet (bowl cut / characteristic helmet)
+      ctx.fillStyle = p.body; // Hair in player's color = characteristic
+      ctx.beginPath();
+      ctx.arc(hcx, hcy, hR * 1.15, 0, Math.PI * 2);
+      ctx.fill();
+      // Cut bottom half to make helmet shape
+      ctx.fillStyle = p.skin;
+      ctx.fillRect(-hR * 1.2, hcy - hR * 0.1, hR * 2.4, hR * 1.3);
 
-      // Side hair flaps
-      ctx.fillStyle = p.hair;
-      this._rr(-headW / 2 - 4 * SCALE, headY + headH * 0.12, 8 * SCALE, headH * 0.3, 3 * SCALE);
-      this._rr(headW / 2 - 4 * SCALE, headY + headH * 0.12, 8 * SCALE, headH * 0.3, 3 * SCALE);
+      // Hair outline
+      ctx.strokeStyle = p.shadow;
+      ctx.lineWidth = 2 * SCALE;
+      ctx.beginPath();
+      ctx.arc(hcx, hcy, hR * 1.15, Math.PI * 0.95, Math.PI * 2.05);
+      ctx.stroke();
 
       // Eyes — BIG chibi eyes
       const eyeY   = headY + headH * 0.42;
@@ -1146,9 +1233,21 @@ function drawHUD(p1, p2, roundNum, p1Wins, p2Wins, roundTimer) {
 }
 
 function _drawFaceAvatar(x, y, size, fighter, borderColor) {
+  // Glow ring behind
   ctx.save();
+  ctx.shadowColor = borderColor;
+  ctx.shadowBlur  = 8;
+  ctx.strokeStyle = borderColor;
+  ctx.lineWidth   = 3;
   ctx.beginPath();
   ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+
+  // Clip to circle
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x + size / 2, y + size / 2, size / 2 - 1.5, 0, Math.PI * 2);
   ctx.clip();
 
   if (fighter.faceCanvas) {
@@ -1171,9 +1270,9 @@ function _drawFaceAvatar(x, y, size, fighter, borderColor) {
 
   ctx.restore();
 
-  // Border circle
+  // Border circle on top
   ctx.strokeStyle = borderColor;
-  ctx.lineWidth   = 2;
+  ctx.lineWidth   = 2.5;
   ctx.beginPath();
   ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
   ctx.stroke();
