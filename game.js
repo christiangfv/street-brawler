@@ -35,6 +35,27 @@ bgImage.src   = 'background.jpg';
 let bgLoaded  = false;
 bgImage.onload = () => { bgLoaded = true; };
 
+// ── Face API (face-api.js loaded via CDN defer) ───────────────
+let faceApiReady = false;
+
+async function ensureFaceApi() {
+  if (faceApiReady) return true;
+  if (typeof faceapi === 'undefined') return false;
+  try {
+    await faceapi.nets.tinyFaceDetector.loadFromUri(
+      'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights'
+    );
+    faceApiReady = true;
+    return true;
+  } catch (e) {
+    console.warn('[face-api] model load failed:', e);
+    return false;
+  }
+}
+
+// Kick off model loading as soon as the page finishes loading
+window.addEventListener('load', () => { ensureFaceApi().catch(() => {}); });
+
 // ── Screen shake ─────────────────────────────────────────────
 let shakeAmount = 0;
 let shakeDx = 0, shakeDy = 0;
@@ -211,41 +232,91 @@ function isDown(code) { return !!(keys[code] || vkeys[code]); }
 // ── Selfie System ────────────────────────────────────────────
 const playerFaces = { p1: null, p2: null };
 
-function captureAndPixelate(video) {
-  const vw   = video.videoWidth  || 320;
-  const vh   = video.videoHeight || 240;
-  const size = Math.min(vw, vh);
-  const srcX = (vw - size) / 2;
-  const srcY = (vh - size) / 2;
+/**
+ * captureAndPixelate(video) → Promise<HTMLCanvasElement>
+ *
+ * 1. Detect face via face-api.js (TinyFaceDetector) — or fallback to
+ *    center-55% crop if detection fails / library unavailable.
+ * 2. Crop to face bbox + 25% padding, drawn mirrored (selfie cam) into 200×200.
+ * 3. Reduce to 48×48 with color quantisation (~32 colours, step=32).
+ * 4. Scale back to 200×200 with imageSmoothingEnabled=false → pixel art look.
+ */
+async function captureAndPixelate(video) {
+  const vw = video.videoWidth  || 320;
+  const vh = video.videoHeight || 240;
 
+  // ── 1. Face detection ──────────────────────────────────────
+  let srcX, srcY, srcSize;
+  let faceDetected = false;
+
+  try {
+    const ready = await ensureFaceApi();
+    if (ready) {
+      const det = await faceapi.detectSingleFace(
+        video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.4 })
+      );
+      if (det) {
+        faceDetected = true;
+        const { x, y, width, height } = det.box;
+        const pad = Math.max(width, height) * 0.25;
+        srcX    = Math.max(0, x - pad);
+        srcY    = Math.max(0, y - pad);
+        const w2 = Math.min(vw - srcX, width  + pad * 2);
+        const h2 = Math.min(vh - srcY, height + pad * 2);
+        srcSize  = Math.min(w2, h2);
+        console.log('[face-api] face detected ✓ box:', Math.round(x), Math.round(y), Math.round(width), Math.round(height));
+      }
+    }
+  } catch (e) {
+    console.warn('[face-api] detection error:', e);
+  }
+
+  // ── 2. Fallback: center 55% crop ──────────────────────────
+  if (!faceDetected || !srcSize) {
+    console.log('[face-api] fallback: center 55% crop');
+    srcSize = Math.min(vw, vh) * 0.55;
+    srcX    = (vw - srcSize) / 2;
+    srcY    = (vh - srcSize) / 2;
+  }
+
+  // ── 3. Draw cropped + mirrored face into 200×200 ──────────
+  const crop = document.createElement('canvas');
+  crop.width = 200; crop.height = 200;
+  const cc = crop.getContext('2d');
+  cc.save();
+  cc.translate(200, 0); cc.scale(-1, 1); // mirror (selfie cam)
+  cc.imageSmoothingEnabled = true;
+  cc.imageSmoothingQuality = 'high';
+  cc.drawImage(video, srcX, srcY, srcSize, srcSize, 0, 0, 200, 200);
+  cc.restore();
+
+  // ── 4. Reduce to 48×48 (pixelation resolution) ───────────
   const small = document.createElement('canvas');
-  small.width = 16; small.height = 16;
+  small.width = 48; small.height = 48;
   const sc = small.getContext('2d');
-  sc.save();
-  sc.translate(16, 0); sc.scale(-1, 1);
-  sc.drawImage(video, srcX, srcY, size, size, 0, 0, 16, 16);
-  sc.restore();
+  sc.imageSmoothingEnabled = true;
+  sc.imageSmoothingQuality = 'low';
+  sc.drawImage(crop, 0, 0, 48, 48);
 
-  const id   = sc.getImageData(0, 0, 16, 16);
+  // ── 5. Color quantisation: ~32 colours (step = 32) ────────
+  const id   = sc.getImageData(0, 0, 48, 48);
   const d    = id.data;
-  const step = 64;
+  const step = 32; // 256/32 = 8 levels/ch  →  moderate pixel palette
   for (let i = 0; i < d.length; i += 4) {
     d[i]   = Math.min(255, Math.round(d[i]   / step) * step);
     d[i+1] = Math.min(255, Math.round(d[i+1] / step) * step);
     d[i+2] = Math.min(255, Math.round(d[i+2] / step) * step);
   }
   sc.putImageData(id, 0, 0);
-  return small;
-}
 
-// Also create a 32x32 HUD thumbnail
-function createHUDFace(face16) {
-  const c = document.createElement('canvas');
-  c.width = 32; c.height = 32;
-  const cx = c.getContext('2d');
-  cx.imageSmoothingEnabled = false;
-  cx.drawImage(face16, 0, 0, 32, 32);
-  return c;
+  // ── 6. Scale back to 200×200 WITHOUT smoothing (pixel art) ─
+  const out = document.createElement('canvas');
+  out.width = 200; out.height = 200;
+  const oc = out.getContext('2d');
+  oc.imageSmoothingEnabled = false;
+  oc.drawImage(small, 0, 0, 200, 200);
+
+  return out;
 }
 
 function showSelfieScreen(playerNum, palette, onDone) {
@@ -305,9 +376,11 @@ function showSelfieScreen(playerNum, palette, onDone) {
       .catch(() => { status.textContent = '⚠ Camera denied — use Skip.'; });
   });
 
-  btnCap.addEventListener('click', () => {
+  btnCap.addEventListener('click', async () => {
     if (!stream) return;
-    playerFaces[key] = captureAndPixelate(video);
+    status.textContent = '🔍 Detecting face…';
+    btnCap.disabled = true;
+    playerFaces[key] = await captureAndPixelate(video);
     cleanup();
     onDone();
   });
@@ -706,23 +779,38 @@ class Fighter {
     const headY = bodyY - headH + 2 * SCALE;
 
     if (this.faceCanvas) {
-      // Clip to rounded head, draw pixelated selfie
+      // ── Circular selfie head ──────────────────────────────
+      const hcx = 0;                        // already translated to fighter center
+      const hcy = headY + headH / 2;        // vertical center of head area
+      const hR  = Math.min(headW, headH) * 0.5; // radius
+
+      // Glow ring behind the circle (player color)
       ctx.save();
-      this._rrPath(-headW / 2, headY, headW, headH, headH * 0.15);
-      ctx.clip();
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(this.faceCanvas, -headW / 2, headY, headW, headH);
+      ctx.shadowColor = p.body;
+      ctx.shadowBlur  = 18 * SCALE;
+      ctx.strokeStyle = p.body;
+      ctx.lineWidth   = 5 * SCALE;
+      ctx.beginPath();
+      ctx.arc(hcx, hcy, hR, 0, Math.PI * 2);
+      ctx.stroke();
       ctx.restore();
 
-      // Hair strip over selfie
-      ctx.fillStyle = p.hair;
-      this._rr(-headW / 2, headY, headW, headH * 0.2, [headH * 0.15, headH * 0.15, 0, 0]);
+      // Clip to circle, draw face
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(hcx, hcy, hR - 1.5 * SCALE, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(this.faceCanvas, hcx - hR, hcy - hR, hR * 2, hR * 2);
+      ctx.restore();
 
-      // Outline
-      ctx.strokeStyle = p.hair;
-      ctx.lineWidth = 1.5;
-      this._rrPath(-headW / 2, headY, headW, headH, headH * 0.15);
+      // Crisp border ring on top
+      ctx.strokeStyle = p.body;
+      ctx.lineWidth   = 3.5 * SCALE;
+      ctx.beginPath();
+      ctx.arc(hcx, hcy, hR, 0, Math.PI * 2);
       ctx.stroke();
+
     } else {
       // Default chibi face
       ctx.fillStyle = p.skin;
