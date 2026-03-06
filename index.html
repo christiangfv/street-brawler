@@ -2,23 +2,64 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <title>Street Brawler</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- Portrait warning overlay -->
+  <div id="portrait-warning">
+    <span>📱 Rotate your device<br>for the best experience</span>
+  </div>
+
   <h1>⚔ Street Brawler</h1>
 
   <div id="canvas-wrapper">
     <canvas id="gameCanvas" width="900" height="500"></canvas>
   </div>
 
+  <!-- Desktop hint (hidden on mobile) -->
   <div id="controls-hint">
-    <span class="p1">P1 [RYU]: A/D move &nbsp;|&nbsp; F attack</span>
+    <span class="p1">P1 [RYU]: A/D move &nbsp;|&nbsp; F attack &nbsp;|&nbsp; FF quick = SPECIAL</span>
     &nbsp;&nbsp;·&nbsp;&nbsp;
-    <span class="p2">P2 [KEN]: ←/→ move &nbsp;|&nbsp; L attack</span>
+    <span class="p2">P2 [KEN]: ←/→ move &nbsp;|&nbsp; L attack &nbsp;|&nbsp; LL quick = SPECIAL</span>
     &nbsp;&nbsp;·&nbsp;&nbsp;
     <span>Enter: restart</span>
+  </div>
+
+  <!-- Mobile arcade controls -->
+  <div id="mobile-controls">
+    <!-- P1 left side -->
+    <div class="player-controls" id="p1-controls">
+      <div class="player-label p1-label">P1 · RYU</div>
+      <div class="controls-row">
+        <div class="dpad">
+          <button class="dpad-btn" id="p1-left">◀</button>
+          <button class="dpad-btn" id="p1-right">▶</button>
+        </div>
+        <button class="attack-btn p1-atk" id="p1-attack">ATK</button>
+      </div>
+    </div>
+
+    <!-- Center: restart -->
+    <div id="center-controls">
+      <button id="btn-restart" title="Restart">↺</button>
+    </div>
+
+    <!-- P2 right side -->
+    <div class="player-controls" id="p2-controls">
+      <div class="player-label p2-label">P2 · KEN</div>
+      <div class="controls-row">
+        <button class="attack-btn p2-atk" id="p2-attack">ATK</button>
+        <div class="dpad">
+          <button class="dpad-btn" id="p2-left">◀</button>
+          <button class="dpad-btn" id="p2-right">▶</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="game.js"></script>
