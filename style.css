@@ -7,17 +7,26 @@
   user-select: none;
 }
 
-body {
-  background: #0a0a0a;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: 100vh;
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
   font-family: 'Courier New', monospace;
   color: #fff;
-  overflow-x: hidden;
-  padding-bottom: 8px;
+  touch-action: none;
+}
+
+/* ── Canvas: full viewport, no bars ───────────────── */
+#gameCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 /* ── Portrait warning ──────────────────────────────── */
@@ -25,101 +34,104 @@ body {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.92);
-  z-index: 999;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+}
+
+.pw-inner {
   text-align: center;
-  font-size: 1.4rem;
+  animation: rotateHint 1.5s ease-in-out infinite alternate;
+}
+
+.pw-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.pw-text {
+  font-size: 1.3rem;
   color: #ffcc00;
   line-height: 1.8;
+  letter-spacing: 0.05em;
+}
+
+@keyframes rotateHint {
+  from { transform: rotate(-8deg); }
+  to   { transform: rotate(8deg); }
 }
 
 @media (max-width: 768px) and (orientation: portrait) {
   #portrait-warning { display: flex; }
 }
 
-/* ── Title ──────────────────────────────────────────── */
-h1 {
-  font-size: clamp(1.1rem, 4vw, 2.5rem);
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  margin: 8px 0 6px;
-  background: linear-gradient(90deg, #ff4444, #ffaa00, #ff4444);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shine 2s linear infinite;
-}
-
-@keyframes shine {
-  to { background-position: 200% center; }
-}
-
-/* ── Canvas wrapper ─────────────────────────────────── */
-#canvas-wrapper {
-  position: relative;
-  border: 3px solid #333;
-  border-radius: 4px;
-  box-shadow: 0 0 40px rgba(255, 68, 68, 0.3), 0 0 80px rgba(255, 170, 0, 0.1);
-  width: 100%;
-  max-width: 900px;
+/* ── Fullscreen button ─────────────────────────────── */
+#btn-fullscreen {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 500;
+  width: 38px;
+  height: 38px;
+  font-size: 1.2rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
   display: flex;
+  align-items: center;
   justify-content: center;
+  transition: background 0.1s, color 0.1s;
+  touch-action: manipulation;
+  outline: none;
+  backdrop-filter: blur(4px);
 }
 
-canvas {
-  display: block;
-  border-radius: 2px;
-  width: 100%;
-  height: auto;
-  max-width: 900px;
-}
-
-/* ── Desktop controls hint ──────────────────────────── */
-#controls-hint {
-  margin-top: 8px;
-  font-size: 0.72rem;
-  color: #555;
-  letter-spacing: 0.1em;
-  text-align: center;
-  padding: 0 10px;
-}
-#controls-hint .p1 { color: #4488ff; }
-#controls-hint .p2 { color: #ff4444; }
-
-@media (max-width: 768px) {
-  #controls-hint { display: none; }
+#btn-fullscreen:hover,
+#btn-fullscreen:active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
 }
 
 /* ── Mobile Controls ────────────────────────────────── */
 #mobile-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  max-width: 900px;
-  padding: 10px 12px;
+  padding: 8px 12px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 100;
+  pointer-events: none;
   gap: 6px;
+  /* Translucent overlay so buttons sit above canvas */
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%);
 }
 
 .player-controls {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex: 1;
+  pointer-events: all;
 }
 
 #p1-controls { align-items: flex-start; }
 #p2-controls { align-items: flex-end; }
 
 .player-label {
-  font-size: 0.65rem;
-  letter-spacing: 0.15em;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
   font-weight: bold;
-  opacity: 0.85;
+  opacity: 0.7;
+  text-transform: uppercase;
 }
 .p1-label { color: #4488ff; }
 .p2-label { color: #ff4444; }
@@ -127,100 +139,100 @@ canvas {
 .controls-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .dpad {
   display: flex;
-  gap: 6px;
+  gap: 5px;
 }
 
 .dpad-btn {
-  width: 62px;
-  height: 62px;
-  font-size: 1.4rem;
-  background: rgba(255, 255, 255, 0.07);
-  border: 2px solid rgba(255, 255, 255, 0.18);
+  width: 58px;
+  height: 58px;
+  font-size: 1.3rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 14px;
   color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.08s, transform 0.05s, border-color 0.08s;
+  transition: background 0.06s, transform 0.04s;
   touch-action: manipulation;
   -webkit-appearance: none;
   outline: none;
+  backdrop-filter: blur(2px);
 }
 
 .dpad-btn.active,
 .dpad-btn:active {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(0.90);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.28);
+  transform: scale(0.89);
+  border-color: rgba(255, 255, 255, 0.55);
 }
 
 .attack-btn {
-  width: 76px;
-  height: 76px;
-  font-size: 0.85rem;
+  width: 72px;
+  height: 72px;
+  font-size: 0.8rem;
   font-weight: bold;
   font-family: 'Courier New', monospace;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   border-radius: 50%;
   border: 3px solid;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.08s, transform 0.05s, box-shadow 0.08s;
+  transition: background 0.06s, transform 0.04s, box-shadow 0.06s;
   touch-action: manipulation;
   -webkit-appearance: none;
   outline: none;
+  backdrop-filter: blur(2px);
 }
 
-/* P1 attack = RED (RYU) */
 .p1-atk {
-  background: rgba(220, 50, 50, 0.25);
+  background: rgba(220, 50, 50, 0.2);
   border-color: #ff4444;
   color: #ff8888;
-  box-shadow: 0 0 14px rgba(255, 68, 68, 0.3);
+  box-shadow: 0 0 16px rgba(255, 68, 68, 0.35), inset 0 0 10px rgba(255,68,68,0.1);
 }
 .p1-atk.active,
 .p1-atk:active {
   background: rgba(220, 50, 50, 0.65);
-  transform: scale(0.88);
-  box-shadow: 0 0 28px rgba(255, 68, 68, 0.7);
+  transform: scale(0.87);
+  box-shadow: 0 0 30px rgba(255, 68, 68, 0.8), inset 0 0 20px rgba(255,68,68,0.3);
 }
 
-/* P2 attack = BLUE (KEN) */
 .p2-atk {
-  background: rgba(50, 100, 220, 0.25);
+  background: rgba(50, 100, 220, 0.2);
   border-color: #4488ff;
   color: #88aaff;
-  box-shadow: 0 0 14px rgba(68, 136, 255, 0.3);
+  box-shadow: 0 0 16px rgba(68, 136, 255, 0.35), inset 0 0 10px rgba(68,136,255,0.1);
 }
 .p2-atk.active,
 .p2-atk:active {
   background: rgba(50, 100, 220, 0.65);
-  transform: scale(0.88);
-  box-shadow: 0 0 28px rgba(68, 136, 255, 0.7);
+  transform: scale(0.87);
+  box-shadow: 0 0 30px rgba(68, 136, 255, 0.8), inset 0 0 20px rgba(68,136,255,0.3);
 }
 
-/* Center restart button */
 #center-controls {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex: 0 0 auto;
+  pointer-events: all;
 }
 
 #btn-restart {
-  width: 46px;
-  height: 46px;
-  font-size: 1.3rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 2px solid rgba(255, 255, 255, 0.14);
+  width: 44px;
+  height: 44px;
+  font-size: 1.2rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
   color: #888;
   cursor: pointer;
@@ -241,7 +253,7 @@ canvas {
 #selfie-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.92);
+  background: rgba(0, 0, 0, 0.93);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -253,37 +265,37 @@ canvas {
 .selfie-box {
   background: #0d0d1a;
   border: 2px solid;
-  border-radius: 12px;
-  padding: 28px 32px;
+  border-radius: 16px;
+  padding: 24px 28px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-  max-width: 420px;
+  gap: 12px;
+  max-width: 380px;
   width: 100%;
 }
 
 .selfie-badge {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: bold;
   letter-spacing: 0.3em;
   text-transform: uppercase;
 }
 
 .selfie-title {
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #aaa;
   letter-spacing: 0.1em;
 }
 
 .selfie-preview-wrap {
   position: relative;
-  width: 200px;
-  height: 200px;
-  border-radius: 10px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
   overflow: hidden;
   background: #111;
-  border: 2px solid #333;
+  border: 3px solid #333;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -294,7 +306,7 @@ canvas {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scaleX(-1); /* mirror for natural selfie feel */
+  transform: scaleX(-1);
 }
 
 #selfie-placeholder {
@@ -305,39 +317,39 @@ canvas {
 }
 
 #selfie-placeholder span {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: #333;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   display: block;
   margin-top: 6px;
 }
 
 .selfie-status {
-  min-height: 20px;
-  font-size: 0.75rem;
+  min-height: 18px;
+  font-size: 0.72rem;
   color: #888;
   text-align: center;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .selfie-buttons {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .sbtn {
-  padding: 10px 20px;
+  padding: 10px 18px;
   font-family: 'Courier New', monospace;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: bold;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   border: 2px solid;
   border-radius: 8px;
   background: transparent;
   cursor: pointer;
-  transition: background 0.1s, transform 0.08s, box-shadow 0.1s;
+  transition: background 0.1s, transform 0.07s;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -346,11 +358,7 @@ canvas {
 }
 
 .sbtn:active { transform: scale(0.93); }
-
-.sbtn:hover {
-  filter: brightness(1.3);
-  box-shadow: 0 0 12px currentColor;
-}
+.sbtn:hover { filter: brightness(1.3); }
 
 .sbtn-green {
   border-color: #44ff88;
@@ -364,22 +372,25 @@ canvas {
 
 /* ── Small screen tweaks ──────────────────────────────── */
 @media (max-width: 480px) {
-  h1 { font-size: 1rem; letter-spacing: 0.15em; }
-
   .dpad-btn {
-    width: 54px;
-    height: 54px;
-    font-size: 1.25rem;
-    border-radius: 12px;
+    width: 52px;
+    height: 52px;
+    font-size: 1.1rem;
   }
-
   .attack-btn {
-    width: 66px;
-    height: 66px;
-    font-size: 0.8rem;
+    width: 62px;
+    height: 62px;
+    font-size: 0.75rem;
   }
+  .dpad { gap: 4px; }
+  .controls-row { gap: 6px; }
+  #mobile-controls { padding: 6px 8px; }
+  #btn-fullscreen { top: 6px; right: 6px; width: 32px; height: 32px; font-size: 1rem; }
+}
 
-  .dpad { gap: 5px; }
-  .controls-row { gap: 8px; }
-  #mobile-controls { padding: 8px 6px; }
+/* Desktop hint: show on large screens only */
+@media (min-width: 769px) {
+  #mobile-controls {
+    /* Still show on desktop for mouse testing */
+  }
 }
