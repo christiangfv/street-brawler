@@ -29,6 +29,9 @@ const MAX_HP       = 100;
 const DOUBLE_TAP_MS = 380;
 const ROUND_TIME   = 90; // seconds per round
 
+// ── OpenAI API (prototype — hardcoded key) ───────────────────
+const OPENAI_KEY = 'REDACTED_OPENAI_KEY';
+
 // ── Background image ─────────────────────────────────────────
 const bgImage = new Image();
 bgImage.src   = 'background.jpg';
@@ -233,19 +236,174 @@ function isDown(code) { return !!(keys[code] || vkeys[code]); }
 const playerFaces = { p1: null, p2: null };
 
 /**
+ * cropFaceFromVideo(video) → base64 JPEG dataURL
+ * Detect face via face-api.js or fallback to center-55% crop.
+ * Returns a 512×512 cropped face as JPEG dataURL.
+ */
+async function cropFaceFromVideo(video) {
+  const vw = video.videoWidth  || 320;
+  const vh = video.videoHeight || 240;
+
+  let srcX, srcY, srcSize;
+  let faceDetected = false;
+
+  try {
+    const ready = await ensureFaceApi();
+    if (ready) {
+      const det = await faceapi.detectSingleFace(
+        video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.4 })
+      );
+      if (det) {
+        faceDetected = true;
+        const { x, y, width, height } = det.box;
+        const pad = Math.max(width, height) * 0.30;
+        srcX    = Math.max(0, x - pad);
+        srcY    = Math.max(0, y - pad * 0.5);
+        const w2 = Math.min(vw - srcX, width  + pad * 2);
+        const h2 = Math.min(vh - srcY, height + pad * 1.5);
+        srcSize  = Math.min(w2, h2);
+        console.log('[face-api] face detected ✓');
+      }
+    }
+  } catch (e) {
+    console.warn('[face-api] detection error:', e);
+  }
+
+  if (!faceDetected || !srcSize) {
+    console.log('[face-api] fallback: center 55% crop');
+    srcSize = Math.min(vw, vh) * 0.55;
+    srcX    = (vw - srcSize) / 2;
+    srcY    = (vh - srcSize) / 2;
+  }
+
+  const crop = document.createElement('canvas');
+  crop.width = 512; crop.height = 512;
+  const cc = crop.getContext('2d');
+  cc.save();
+  cc.translate(512, 0); cc.scale(-1, 1); // mirror selfie cam
+  cc.imageSmoothingEnabled = true;
+  cc.imageSmoothingQuality = 'high';
+  cc.drawImage(video, srcX, srcY, srcSize, srcSize, 0, 0, 512, 512);
+  cc.restore();
+
+  return crop.toDataURL('image/jpeg', 0.85);
+}
+
+/**
+ * analyzeFaceWithGPT(dataURL) → description string
+ * Sends the face image to GPT-4o-mini for textual description.
+ */
+async function analyzeFaceWithGPT(dataURL) {
+  const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${OPENAI_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image_url', image_url: { url: dataURL } },
+          { type: 'text', text: "Describe this person's face for creating a pixel art portrait: skin tone, hair color and style, eye color, any distinctive features like beard, glasses, freckles, etc. Be concise, 2-3 sentences." }
+        ]
+      }],
+      max_tokens: 150
+    })
+  });
+  if (!resp.ok) throw new Error(`GPT API error: ${resp.status}`);
+  const data = await resp.json();
+  const desc = data.choices[0].message.content;
+  console.log('[GPT] face description:', desc);
+  return desc;
+}
+
+/**
+ * generatePixelArtWithDalle(description) → image URL
+ * Generates a chibi pixel art portrait via DALL-E 3.
+ */
+async function generatePixelArtWithDalle(description) {
+  const prompt = `Chibi pixel art portrait, 16-bit retro game style, close-up face only, circular portrait, bold black outline, expressive cartoon eyes, clear facial features, ${description}, fighter character, vibrant colors, clean pixel art, solid dark background`;
+  const resp = await fetch('https://api.openai.com/v1/images/generations', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${OPENAI_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'dall-e-3',
+      prompt,
+      size: '1024x1024',
+      quality: 'standard',
+      n: 1
+    })
+  });
+  if (!resp.ok) throw new Error(`DALL-E API error: ${resp.status}`);
+  const data = await resp.json();
+  return data.data[0].url;
+}
+
+/**
+ * urlToCanvas(url) → HTMLCanvasElement (512×512)
+ * Fetches image as blob (avoids CORS tainting) and draws to canvas.
+ */
+async function urlToCanvas(url) {
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`Image fetch error: ${resp.status}`);
+  const blob = await resp.blob();
+  const objUrl = URL.createObjectURL(blob);
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = 512; c.height = 512;
+      const cx = c.getContext('2d');
+      cx.drawImage(img, 0, 0, 512, 512);
+      URL.revokeObjectURL(objUrl);
+      resolve(c);
+    };
+    img.onerror = () => { URL.revokeObjectURL(objUrl); reject(new Error('Image load failed')); };
+    img.src = objUrl;
+  });
+}
+
+/**
+ * captureWithOpenAI(video, onStatus) → Promise<HTMLCanvasElement>
+ * Full pipeline: selfie → GPT-4o-mini → DALL-E 3 → canvas
+ * Falls back to manual pixelation on any error.
+ */
+async function captureWithOpenAI(video, onStatus) {
+  try {
+    onStatus('🔍 Detecting face…');
+    const faceDataURL = await cropFaceFromVideo(video);
+
+    onStatus('🤖 Analyzing face with AI…');
+    const description = await analyzeFaceWithGPT(faceDataURL);
+
+    onStatus('🎨 Generating pixel art portrait…<br><small style="opacity:0.6">(10–15 seconds)</small>');
+    const imageUrl = await generatePixelArtWithDalle(description);
+
+    onStatus('⬇️ Loading avatar…');
+    const avatarCanvas = await urlToCanvas(imageUrl);
+
+    return avatarCanvas;
+  } catch (err) {
+    console.warn('[OpenAI pipeline] failed, using fallback:', err);
+    onStatus('⚠️ AI failed — using fallback pixelation…');
+    await new Promise(r => setTimeout(r, 800));
+    return await captureAndPixelate(video);
+  }
+}
+
+/**
  * captureAndPixelate(video) → Promise<HTMLCanvasElement>
- *
- * 1. Detect face via face-api.js (TinyFaceDetector) — or fallback to
- *    center-55% crop if detection fails / library unavailable.
- * 2. Crop to face bbox + 25% padding, drawn mirrored (selfie cam) into 200×200.
- * 3. Reduce to 48×48 with color quantisation (~32 colours, step=32).
- * 4. Scale back to 200×200 with imageSmoothingEnabled=false → pixel art look.
+ * Fallback: manual pixelation (12×12 upscaled to 200×200).
  */
 async function captureAndPixelate(video) {
   const vw = video.videoWidth  || 320;
   const vh = video.videoHeight || 240;
 
-  // ── 1. Face detection ──────────────────────────────────────
   let srcX, srcY, srcSize;
   let faceDetected = false;
 
@@ -264,33 +422,26 @@ async function captureAndPixelate(video) {
         const w2 = Math.min(vw - srcX, width  + pad * 2);
         const h2 = Math.min(vh - srcY, height + pad * 2);
         srcSize  = Math.min(w2, h2);
-        console.log('[face-api] face detected ✓ box:', Math.round(x), Math.round(y), Math.round(width), Math.round(height));
       }
     }
-  } catch (e) {
-    console.warn('[face-api] detection error:', e);
-  }
+  } catch (e) {}
 
-  // ── 2. Fallback: center 55% crop ──────────────────────────
   if (!faceDetected || !srcSize) {
-    console.log('[face-api] fallback: center 55% crop');
     srcSize = Math.min(vw, vh) * 0.55;
     srcX    = (vw - srcSize) / 2;
     srcY    = (vh - srcSize) / 2;
   }
 
-  // ── 3. Draw cropped + mirrored face into 200×200 ──────────
   const crop = document.createElement('canvas');
   crop.width = 200; crop.height = 200;
   const cc = crop.getContext('2d');
   cc.save();
-  cc.translate(200, 0); cc.scale(-1, 1); // mirror (selfie cam)
+  cc.translate(200, 0); cc.scale(-1, 1);
   cc.imageSmoothingEnabled = true;
   cc.imageSmoothingQuality = 'high';
   cc.drawImage(video, srcX, srcY, srcSize, srcSize, 0, 0, 200, 200);
   cc.restore();
 
-  // ── 4. Reduce to 12×12 (ULTRA-BLOCKY pixel art) ──────────
   const small = document.createElement('canvas');
   small.width = 12; small.height = 12;
   const sc = small.getContext('2d');
@@ -298,10 +449,9 @@ async function captureAndPixelate(video) {
   sc.imageSmoothingQuality = 'low';
   sc.drawImage(crop, 0, 0, 12, 12);
 
-  // ── 5. Color quantisation: 8-12 colours (step = 85) ───────
   const id   = sc.getImageData(0, 0, 12, 12);
   const d    = id.data;
-  const step = 85; // 3 levels/ch (0,85,170,255) → ~27 combos, naturally clusters to 8-12 colors
+  const step = 85;
   for (let i = 0; i < d.length; i += 4) {
     d[i]   = Math.min(255, Math.round(d[i]   / step) * step);
     d[i+1] = Math.min(255, Math.round(d[i+1] / step) * step);
@@ -309,7 +459,6 @@ async function captureAndPixelate(video) {
   }
   sc.putImageData(id, 0, 0);
 
-  // ── 6. Scale back to 200×200 WITHOUT smoothing (pixel art) ─
   const out = document.createElement('canvas');
   out.width = 200; out.height = 200;
   const oc = out.getContext('2d');
@@ -378,9 +527,21 @@ function showSelfieScreen(playerNum, palette, onDone) {
 
   btnCap.addEventListener('click', async () => {
     if (!stream) return;
-    status.textContent = '🔍 Detecting face…';
     btnCap.disabled = true;
-    playerFaces[key] = await captureAndPixelate(video);
+    btnSkip.disabled = true;
+    video.style.opacity = '0.35';
+
+    // Show loading spinner
+    const loadWrap = overlay.querySelector('.selfie-preview-wrap');
+    const spinner = document.createElement('div');
+    spinner.id = 'selfie-spinner';
+    spinner.innerHTML = `<div class="spinner-ring"></div>`;
+    loadWrap.appendChild(spinner);
+
+    playerFaces[key] = await captureWithOpenAI(video, msg => {
+      status.innerHTML = msg;
+    });
+
     cleanup();
     onDone();
   });
@@ -811,78 +972,53 @@ class Fighter {
       ctx.arc(hcx, hcy, hR, 0, Math.PI * 2);
       ctx.stroke();
 
-      // ── CARTOON FEATURES ON TOP ───────────────────────────
-      // Bright white eyes with black pupils
-      const eyeY = hcy - hR * 0.15;
-      const eyeR = hR * 0.18;
+      // ── REACTIVE EYEBROWS (over the AI-generated portrait) ──
+      // Eyes are in the generated image — only overlay dynamic eyebrows
+      const eyeR  = hR * 0.18;
       const eyeXL = hcx - hR * 0.3;
       const eyeXR = hcx + hR * 0.3;
+      const browY = hcy - hR * 0.42;
 
-      // Left eye
-      ctx.fillStyle = '#ffffff';
-      ctx.shadowColor = '#ffffff';
-      ctx.shadowBlur = 6 * SCALE;
-      ctx.beginPath();
-      ctx.arc(eyeXL, eyeY, eyeR, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#111';
-      ctx.shadowBlur = 0;
-      ctx.beginPath();
-      ctx.arc(eyeXL, eyeY, eyeR * 0.4, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Right eye
-      ctx.fillStyle = '#ffffff';
-      ctx.shadowColor = '#ffffff';
-      ctx.shadowBlur = 6 * SCALE;
-      ctx.beginPath();
-      ctx.arc(eyeXR, eyeY, eyeR, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#111';
-      ctx.shadowBlur = 0;
-      ctx.beginPath();
-      ctx.arc(eyeXR, eyeY, eyeR * 0.4, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Reactive eyebrows
-      const browY = hcy - hR * 0.45;
       ctx.strokeStyle = p.body;
-      ctx.lineWidth = 2.5 * SCALE;
+      ctx.lineWidth = 3 * SCALE;
       ctx.lineCap = 'round';
+      ctx.shadowColor = p.body;
+      ctx.shadowBlur  = 4 * SCALE;
 
       if (this.stunTimer > 0) {
         // Curved up (∩) when stunned
         ctx.beginPath();
         ctx.moveTo(eyeXL - eyeR * 1.2, browY);
-        ctx.quadraticCurveTo(eyeXL, browY - eyeR * 0.5, eyeXL + eyeR * 1.2, browY);
+        ctx.quadraticCurveTo(eyeXL, browY - eyeR * 0.6, eyeXL + eyeR * 1.2, browY);
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(eyeXR - eyeR * 1.2, browY);
-        ctx.quadraticCurveTo(eyeXR, browY - eyeR * 0.5, eyeXR + eyeR * 1.2, browY);
+        ctx.quadraticCurveTo(eyeXR, browY - eyeR * 0.6, eyeXR + eyeR * 1.2, browY);
         ctx.stroke();
       } else if (this.attacking) {
         // Angry V when attacking
         ctx.beginPath();
-        ctx.moveTo(eyeXL - eyeR * 1.2, browY + eyeR * 0.3);
-        ctx.lineTo(eyeXL, browY - eyeR * 0.3);
-        ctx.lineTo(eyeXL + eyeR * 1.2, browY + eyeR * 0.3);
+        ctx.moveTo(eyeXL - eyeR * 1.2, browY + eyeR * 0.4);
+        ctx.lineTo(eyeXL, browY - eyeR * 0.4);
+        ctx.lineTo(eyeXL + eyeR * 1.2, browY + eyeR * 0.4);
         ctx.stroke();
         ctx.beginPath();
-        ctx.moveTo(eyeXR - eyeR * 1.2, browY + eyeR * 0.3);
-        ctx.lineTo(eyeXR, browY - eyeR * 0.3);
-        ctx.lineTo(eyeXR + eyeR * 1.2, browY + eyeR * 0.3);
+        ctx.moveTo(eyeXR - eyeR * 1.2, browY + eyeR * 0.4);
+        ctx.lineTo(eyeXR, browY - eyeR * 0.4);
+        ctx.lineTo(eyeXR + eyeR * 1.2, browY + eyeR * 0.4);
         ctx.stroke();
       } else {
-        // Normal straight brows
+        // Normal arched brows (resting)
         ctx.beginPath();
-        ctx.moveTo(eyeXL - eyeR * 1.2, browY);
-        ctx.lineTo(eyeXL + eyeR * 1.2, browY);
+        ctx.moveTo(eyeXL - eyeR * 1.2, browY + eyeR * 0.15);
+        ctx.quadraticCurveTo(eyeXL, browY - eyeR * 0.2, eyeXL + eyeR * 1.2, browY + eyeR * 0.15);
         ctx.stroke();
         ctx.beginPath();
-        ctx.moveTo(eyeXR - eyeR * 1.2, browY);
-        ctx.lineTo(eyeXR + eyeR * 1.2, browY);
+        ctx.moveTo(eyeXR - eyeR * 1.2, browY + eyeR * 0.15);
+        ctx.quadraticCurveTo(eyeXR, browY - eyeR * 0.2, eyeXR + eyeR * 1.2, browY + eyeR * 0.15);
         ctx.stroke();
       }
+      ctx.shadowBlur = 0;
 
     } else {
       // ── Default chibi face (CIRCULAR with helmet hair) ──
