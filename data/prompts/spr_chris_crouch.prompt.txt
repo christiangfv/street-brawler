@@ -1,0 +1,17 @@
+Look at the attached reference photo carefully. This is the real person's FACE that the character is based on.
+
+Generate a FULL BODY pixel art sprite of THIS EXACT PERSON in the following pose:
+
+Low crouching stance facing RIGHT. One knee almost touching the ground, other leg extended to the side. One fist on the ground for support, other arm raised defensively. Looking up at the opponent, ready to sweep or dodge.
+
+STYLE:
+Pixel art character sprite from a 1990s Super Nintendo fighting game (Pocket Fighter / Super Gem Fighter Mini Mix style). Chibi/super-deformed proportions: very large head (~50% of body height), small compact torso, short stubby legs. Clean black pixel outlines. Flat bright saturated colors, NO gradients, NO anti-aliasing. Full body visible head to toe, centered in a square frame. The character must occupy the same bounding box in every pose — same head size, same body proportions, same overall height. Leave consistent padding around the character — do not scale the character to fill the frame differently per pose.
+
+CHARACTER APPEARANCE (from the photo):
+- FACE: Match the reference photo exactly — same face shape, same hair (color, style, length), same beard/facial hair (only if visible in the reference photo — do NOT invent facial hair), same skin tone. Do NOT add glasses or sunglasses unless they are explicitly described in the outfit below.
+- OUTFIT (not visible in photo, follow this description exactly): Male. Cream/off-white crew-neck sweater with subtle striped texture on the sleeves. Blue sunglasses pushed up on top of his head. Olive green chino pants. White minimalist sneakers. 
+
+CRITICAL RULES:
+- The face MUST match the reference photo.
+- The outfit MUST match the text description above — do NOT invent or change any clothing.
+- This is pose 'crouch' from a sprite sheet.
