@@ -119,13 +119,31 @@ async function init() {
     { alias: 'bg_zapallar',  src: 'assets/bg_zapallar.jpg' },
     ...CHARACTERS.map((c, i) => ({ alias: `char_${i}`, src: c.portrait })),
     // also load by name for direct reference
-    // Animated sprite frames per character
+    // Animated sprite frames per character (base 3 poses)
     ...CHARACTERS.map((c, i) => {
       const n = c.portrait.replace('assets/char_', '').replace('.png', '');
       return [
         { alias: `spr_${i}_idle`, src: `assets/spr_${n}_idle.png` },
         { alias: `spr_${i}_atk`,  src: `assets/spr_${n}_atk.png`  },
         { alias: `spr_${i}_hit`,  src: `assets/spr_${n}_hit.png`  },
+      ];
+    }).flat(),
+    // Extended sprite poses (only some characters have these — loading failures are silently ignored)
+    ...CHARACTERS.map((c, i) => {
+      const n = c.portrait.replace('assets/char_', '').replace('.png', '');
+      return ['kick','block','special','win','ko','jump','crouch','throw','taunt','walk'].map(pose => (
+        { alias: `spr_${i}_${pose}`, src: `assets/spr_${n}_${pose}.png` }
+      ));
+    }).flat(),
+    // Animated frame variants (idle_f0/f1/f2, walk_f0/f1)
+    ...CHARACTERS.map((c, i) => {
+      const n = c.portrait.replace('assets/char_', '').replace('.png', '');
+      return [
+        { alias: `spr_${i}_idle_f0`, src: `assets/spr_${n}_idle_f0.png` },
+        { alias: `spr_${i}_idle_f1`, src: `assets/spr_${n}_idle_f1.png` },
+        { alias: `spr_${i}_idle_f2`, src: `assets/spr_${n}_idle_f2.png` },
+        { alias: `spr_${i}_walk_f0`, src: `assets/spr_${n}_walk_f0.png` },
+        { alias: `spr_${i}_walk_f1`, src: `assets/spr_${n}_walk_f1.png` },
       ];
     }).flat(),
   ];
@@ -175,7 +193,10 @@ function resumeAudio() {
 
 function stopMusic() {
   musicSessionId++; // Invalidate all pending scheduleNote callbacks
-  musicNodes.forEach(n => { try { n.stop(); } catch(e) {} });
+  musicNodes.forEach(n => {
+    try { n.stop(); } catch(e) {}
+    try { n.disconnect(); } catch(e) {}
+  });
   musicNodes = [];
   bgmPlaying = false;
 }
@@ -196,6 +217,7 @@ function playMenuMusic() {
   const gain = audioCtx.createGain();
   gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
   gain.connect(audioCtx.destination);
+  musicNodes.push(gain);
 
   let t = audioCtx.currentTime;
   let step = 0;
@@ -232,6 +254,7 @@ function playVictoryMusic(onDone) {
   const gain = audioCtx.createGain();
   gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
   gain.connect(audioCtx.destination);
+  musicNodes.push(gain);
 
   let t = audioCtx.currentTime + 0.3; // small delay
   fanfare.forEach((freq, i) => {
@@ -268,6 +291,7 @@ function playFightMusic() {
   const gain = audioCtx.createGain();
   gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
   gain.connect(audioCtx.destination);
+  musicNodes.push(gain);
 
   let t = audioCtx.currentTime;
   let step = 0;
@@ -335,6 +359,7 @@ function playSFX(type) {
 // SCENE MANAGEMENT
 // ═══════════════════════════════════════════════════════════
 function showScene(scene) {
+  stopMusic(); // Always stop music on scene change to prevent overlapping tracks
   if (sceneContainer) {
     app.stage.removeChild(sceneContainer);
     sceneContainer.destroy({ children: true });
@@ -555,9 +580,7 @@ function buildMenuScene(container) {
   const ticker = (tk) => {
     if (currentScene !== SCENES.MENU) { app.ticker.remove(ticker); return; }
 
-    // Parallax
-    bgOffX += 0.2;
-    if (bg) { bg.x = -bgOffX % 30; }
+    // Background stays static (no parallax drift)
 
     // Particles
     particles.forEach(p => {
@@ -667,7 +690,7 @@ function buildSelectScene(container) {
   container.addChild(title);
 
   // P1/P2 instructions
-  const p1inst = makeText(gameMode === '2P' ? 'P1: A/D + ENTER' : 'A/D + ENTER', { size: 8, color: 0x4488ff });
+  const p1inst = makeText(gameMode === '2P' ? 'P1: A/D + ENTER' : 'Pick your fighter, then your rival', { size: 8, color: 0x4488ff });
   p1inst.anchor.set(0.5); p1inst.x = W() * 0.25; p1inst.y = H() * 0.12;
   container.addChild(p1inst);
 
@@ -772,11 +795,12 @@ function buildSelectScene(container) {
       playSFX('select');
       if (p1Selected === -1) {
         p1Selected = i;
-      } else if (gameMode === '2P' && p2Selected === -1 && i !== p1Selected) {
+      } else if (p2Selected === -1 && i !== p1Selected) {
         p2Selected = i;
-      } else if (gameMode === '1P') {
-        p2Selected = (i + Math.floor(CHARACTERS.length / 2)) % CHARACTERS.length; // AI picks a different char
+      } else {
+        // Reset and start over with new P1 pick
         p1Selected = i;
+        p2Selected = -1;
       }
       updateCards();
       updatePreview();
@@ -808,7 +832,7 @@ function buildSelectScene(container) {
     previewPanel.addChild(panelBg);
 
     const selIdx1 = p1Selected >= 0 ? p1Selected : p1Hover;
-    const selIdx2 = p2Selected >= 0 ? p2Selected : (gameMode === '2P' ? p2Hover : (selIdx1 + Math.floor(CHARACTERS.length / 2)) % CHARACTERS.length);
+    const selIdx2 = p2Selected >= 0 ? p2Selected : p2Hover;
 
     const char1 = CHARACTERS[selIdx1];
     const char2 = CHARACTERS[selIdx2];
@@ -879,16 +903,16 @@ function buildSelectScene(container) {
   container.addChild(fightBtn);
 
   function checkFightReady() {
-    const ready = p1Selected >= 0 && (gameMode === '1P' || p2Selected >= 0);
+    const ready = p1Selected >= 0 && p2Selected >= 0;
     fightBtn.alpha = ready ? 1 : 0.4;
     fightBtn.interactive = ready;
   }
 
   fightBtn.on('pointertap', () => {
-    const ready = p1Selected >= 0 && (gameMode === '1P' || p2Selected >= 0);
+    const ready = p1Selected >= 0 && p2Selected >= 0;
     if (!ready) return;
     p1CharIdx = p1Selected;
-    p2CharIdx = gameMode === '1P' ? (p1Selected + Math.floor(CHARACTERS.length / 2)) % CHARACTERS.length : p2Selected;
+    p2CharIdx = p2Selected;
     playSFX('select');
     document.removeEventListener('keydown', keydown);
     flashTransition(() => showScene(SCENES.FIGHT));
@@ -910,10 +934,14 @@ function buildSelectScene(container) {
     }
     if (e.key === 'Enter') {
       playSFX('select');
-      p1Selected = p1Hover;
-      if (gameMode === '1P') {
-        p2Selected = (p1Selected + Math.floor(CHARACTERS.length / 2)) % CHARACTERS.length;
-        checkFightReady();
+      if (p1Selected === -1) {
+        p1Selected = p1Hover;
+      } else if (p2Selected === -1 && p1Hover !== p1Selected) {
+        p2Selected = p1Hover;
+      } else {
+        // Reset selection
+        p1Selected = p1Hover;
+        p2Selected = -1;
       }
       updateCards(); updatePreview(); checkFightReady();
     }
@@ -931,10 +959,10 @@ function buildSelectScene(container) {
 
     // Auto-start with FIGHT button if both selected
     if (e.key === 'f' || e.key === 'F') {
-      const ready = p1Selected >= 0 && (gameMode === '1P' || p2Selected >= 0);
+      const ready = p1Selected >= 0 && p2Selected >= 0;
       if (ready) {
         p1CharIdx = p1Selected;
-        p2CharIdx = gameMode === '1P' ? (p1Selected + Math.floor(CHARACTERS.length / 2)) % CHARACTERS.length : p2Selected;
+        p2CharIdx = p2Selected;
         playSFX('select');
         document.removeEventListener('keydown', keydown);
         flashTransition(() => showScene(SCENES.FIGHT));
@@ -1059,11 +1087,37 @@ function buildFightScene(container) {
       fighter.mainSprite = spr;
       fighter.outlineSprite = null;
 
-      // Store animated frames (idle/atk/hit)
+      // Store animated frames
       const idx = CHARACTERS.indexOf(fighter.chardef);
       fighter._texIdle = textures[`spr_${idx}_idle`] || fighter.faceTexture;
       fighter._texAtk  = textures[`spr_${idx}_atk`]  || fighter.faceTexture;
       fighter._texHit  = textures[`spr_${idx}_hit`]  || fighter.faceTexture;
+      // Extended poses (fallback to base textures if not available)
+      fighter._texKick    = textures[`spr_${idx}_kick`]    || fighter._texAtk;
+      fighter._texBlock   = textures[`spr_${idx}_block`]   || fighter._texIdle;
+      fighter._texSpecial = textures[`spr_${idx}_special`] || fighter._texAtk;
+      fighter._texWin     = textures[`spr_${idx}_win`]     || fighter._texIdle;
+      fighter._texKo      = textures[`spr_${idx}_ko`]      || fighter._texHit;
+      fighter._texJump    = textures[`spr_${idx}_jump`]    || fighter._texIdle;
+      fighter._texCrouch  = textures[`spr_${idx}_crouch`]  || fighter._texIdle;
+      fighter._texThrow   = textures[`spr_${idx}_throw`]   || fighter._texAtk;
+      fighter._texTaunt   = textures[`spr_${idx}_taunt`]   || fighter._texIdle;
+      fighter._texWalk    = textures[`spr_${idx}_walk`]    || fighter._texIdle;
+      // Animated frame arrays (for cycling idle/walk)
+      const idleF0 = textures[`spr_${idx}_idle_f0`];
+      const idleF1 = textures[`spr_${idx}_idle_f1`];
+      const idleF2 = textures[`spr_${idx}_idle_f2`];
+      fighter._idleFrames = (idleF0 && idleF1 && idleF2)
+        ? [idleF0, idleF1, idleF0, idleF2]  // ping-pong: 0→1→0→2
+        : null;
+      const walkF0 = textures[`spr_${idx}_walk_f0`];
+      const walkF1 = textures[`spr_${idx}_walk_f1`];
+      fighter._walkFrames = (walkF0 && walkF1)
+        ? [walkF0, walkF1]
+        : null;
+      fighter._animFrame = 0;
+      fighter._animTimer = 0;
+      fighter._lastAtkIsKick = false;
     }
 
     // Color aura ring (glows during special)
@@ -1090,11 +1144,56 @@ function buildFightScene(container) {
 
     // ── Swap sprite frame based on state ──────────────────
     if (fighter._texIdle) {
-      const wantTex = (fighter.state === 'attack' || fighter.state === 'special')
-        ? fighter._texAtk
-        : (fighter.state === 'hit' || fighter.state === 'ko')
-          ? fighter._texHit
-          : fighter._texIdle;
+      let wantTex;
+      let useFrameCycle = false;
+
+      switch (fighter.state) {
+        case 'attack':
+          wantTex = fighter._lastAtkIsKick ? fighter._texKick : fighter._texAtk;
+          break;
+        case 'special':
+          wantTex = fighter._texSpecial;
+          break;
+        case 'hit':
+          wantTex = fighter._texHit;
+          break;
+        case 'ko':
+          wantTex = fighter._texKo;
+          break;
+        case 'block':
+          wantTex = fighter._texBlock;
+          break;
+        case 'jump':
+          wantTex = fighter._texJump;
+          break;
+        case 'run':
+          if (fighter._walkFrames) {
+            useFrameCycle = true;
+          } else {
+            wantTex = fighter._texWalk;
+          }
+          break;
+        case 'win':
+          wantTex = fighter._texWin;
+          break;
+        default: // idle
+          if (fighter._idleFrames) {
+            useFrameCycle = true;
+          } else {
+            wantTex = fighter._texIdle;
+          }
+      }
+
+      // Frame cycling for animated poses
+      if (useFrameCycle) {
+        const frames = fighter.state === 'run' ? fighter._walkFrames : fighter._idleFrames;
+        const fps = fighter.state === 'run' ? 8 : 4; // walk faster, idle slower
+        const frameIdx = Math.floor(t * fps) % frames.length;
+        wantTex = frames[frameIdx];
+      } else {
+        fighter._animFrame = 0;
+      }
+
       if (spr.texture !== wantTex) {
         spr.texture = wantTex;
       }
@@ -1224,6 +1323,18 @@ function buildFightScene(container) {
         spr.rotation = 0; // container handles the fall rotation
         spr.y = 0;
         if (aura) aura.clear();
+        break;
+      }
+      case 'win': {
+        const pulse = (Math.sin(t * 3) + 1) / 2;
+        spr.scale.set(bx * (1 + pulse * 0.05), by * (1 + pulse * 0.05));
+        spr.y = -Math.abs(Math.sin(t * 2)) * 4;
+        spr.rotation = 0;
+        if (aura) {
+          aura.clear();
+          aura.ellipse(0, -FIGHTER_H * 0.5, FIGHTER_H * (0.35 + pulse * 0.1), FIGHTER_H * (0.5 + pulse * 0.1))
+            .fill({ color: fighter.chardef.accentColor, alpha: 0.15 + pulse * 0.15 });
+        }
         break;
       }
       default:
@@ -1493,7 +1604,7 @@ function buildFightScene(container) {
 
   // ── AI logic ─────────────────────────────────────────────
   function updateAI(dt) {
-    if (!p2.isAI || p2.state === 'ko') return;
+    if (!p2.isAI || p2.state === 'ko' || p2.state === 'win') return;
     p2.aiTimer -= dt;
     if (p2.aiTimer > 0) return;
     p2.aiTimer = 15 + Math.random() * 20;
@@ -1537,7 +1648,8 @@ function buildFightScene(container) {
 
     const isHeavy  = attackType === 'HP' || attackType === 'HK';
     const isMedium = attackType === 'MP' || attackType === 'MK';
-    attacker.state = (isHeavy || atk.isKick) ? 'special' : 'attack';
+    attacker._lastAtkIsKick = atk.isKick;
+    attacker.state = isHeavy ? 'special' : 'attack';
     attacker.attackTimer = ATTACK_DUR * (isHeavy ? 1.4 : isMedium ? 1.0 : 0.7);
     attacker.attackCd = atk.cd;
 
@@ -1578,6 +1690,9 @@ function buildFightScene(container) {
     if (roundOver) return;
     roundOver = true;
     stopMusic();
+    // Set winner to win pose
+    const winFighter = winner === 1 ? p1 : p2;
+    winFighter.state = 'win';
 
     const winText = winner === 1
       ? char1def.name + ' WINS!'
@@ -1627,7 +1742,7 @@ function buildFightScene(container) {
       timerText.style.fill = roundTime <= 10 ? 0xff4444 : 0xffffff;
 
       // Input handling for P1
-      if (p1.state !== 'ko' && p1.hitStun <= 0) {
+      if (p1.state !== 'ko' && p1.state !== 'win' && p1.hitStun <= 0) {
         let moving = false;
 
         // Blocking (down/S — can't attack while blocking)
@@ -1669,7 +1784,7 @@ function buildFightScene(container) {
       }
 
       // Input for P2 (2P mode)
-      if (!p2.isAI && p2.state !== 'ko' && p2.hitStun <= 0) {
+      if (!p2.isAI && p2.state !== 'ko' && p2.state !== 'win' && p2.hitStun <= 0) {
         let moving = false;
         if (keys['ArrowLeft']) {
           p2.vx = -MOVE_SPEED * p2.speedMult;
@@ -1730,14 +1845,14 @@ function buildFightScene(container) {
         f.x = Math.max(hw, Math.min(W() - hw, f.x));
 
         // Blocking state
-        if (f.blocking && f.state !== 'ko' && f.state !== 'hit') f.state = 'block';
+        if (f.blocking && f.state !== 'ko' && f.state !== 'hit' && f.state !== 'win') f.state = 'block';
         else if (!f.blocking && f.state === 'block') f.state = 'idle';
 
         // Face opponent
-        if (f === p1 && f.state !== 'attack' && f.state !== 'special' && f.state !== 'ko') {
+        if (f === p1 && f.state !== 'attack' && f.state !== 'special' && f.state !== 'ko' && f.state !== 'win') {
           f.dir = p2.x > p1.x ? 1 : -1;
         }
-        if (f === p2 && !f.isAI && f.state !== 'attack' && f.state !== 'special' && f.state !== 'ko') {
+        if (f === p2 && !f.isAI && f.state !== 'attack' && f.state !== 'special' && f.state !== 'ko' && f.state !== 'win') {
           f.dir = p1.x > p2.x ? 1 : -1;
         }
         if (f === p2 && f.isAI) {
@@ -1748,7 +1863,7 @@ function buildFightScene(container) {
         if (f.attackCd > 0) f.attackCd -= dt;
         if (f.attackTimer > 0) {
           f.attackTimer -= dt;
-          if (f.attackTimer <= 0 && f.state !== 'ko' && f.state !== 'hit') f.state = 'idle';
+          if (f.attackTimer <= 0 && f.state !== 'ko' && f.state !== 'hit' && f.state !== 'win') f.state = 'idle';
         }
         if (f.hitStun > 0) {
           f.hitStun -= dt;

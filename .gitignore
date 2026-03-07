@@ -1,1 +1,5 @@
 .vercel
+.claude/
+data/.config/
+__pycache__/
+*.pyc

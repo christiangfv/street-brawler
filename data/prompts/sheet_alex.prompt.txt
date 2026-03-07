@@ -1,0 +1,34 @@
+Look at the attached reference image carefully. This is a pixel art portrait of a character.
+
+Generate a SPRITE SHEET of THIS EXACT SAME CHARACTER with ALL fighting game poses arranged in a grid:
+
+A 4-column × 4-row sprite sheet grid.
+Each cell contains ONE full-body pose. Cells are evenly spaced in a clean grid.
+Label each cell with the pose name in small text at the top-left corner.
+
+Row 1, Col 1 — "idle": Standing upright facing RIGHT in a classic fighting game ready stance. Feet shoulder-width apart, knees slightly bent, both fists raised to chest height. Weight centered, alert confident expression.
+Row 1, Col 2 — "atk": Lunging to the RIGHT in an attack. Right arm fully extended in a straight punch, left arm pulled back at the hip. Body leaning forward, back leg extended. Fierce expression, mouth open in a battle cry.
+Row 1, Col 3 — "hit": Recoiling backward to the LEFT from being hit. Upper body leaning back, arms flung up near the face defensively. Eyes squeezed shut, mouth open in pain. One foot lifting off ground.
+Row 1, Col 4 — "kick": Delivering a high side kick to the RIGHT. Standing on the left leg, right leg fully extended horizontally at chest height, toes pointed. Arms pulled back for balance. Determined fierce expression.
+Row 2, Col 1 — "block": Defensive blocking stance facing RIGHT. Both arms crossed in front of the chest and face, forearms forming an X-guard. Knees bent, feet planted firmly. Eyes visible above the guard, focused and tense expression.
+Row 2, Col 2 — "special": Charging a powerful special attack facing RIGHT. Both hands cupped at the side at waist level, a glowing energy ball forming between the palms. Legs in wide power stance, body slightly crouched. Intense glowing eyes, mouth open yelling. Visible aura/energy particles around the character.
+Row 2, Col 3 — "win": Victory celebration pose facing the camera (front-facing). One fist raised triumphantly above the head, other hand on hip. Standing tall and proud, big confident grin showing teeth. Slight lean back, chest puffed out.
+Row 2, Col 4 — "ko": Knocked out on the ground. Lying flat on their back, eyes replaced by X_X or spiral dizzy eyes, mouth open. Arms and legs sprawled out loosely. Small stars or birds circling above the head.
+Row 3, Col 1 — "jump": Mid-air jumping pose facing RIGHT. Knees tucked up toward the chest, both fists raised above the head ready to strike downward. Body compact and airborne. Alert expression looking down at the opponent below.
+Row 3, Col 2 — "crouch": Low crouching stance facing RIGHT. One knee almost touching the ground, other leg extended to the side. One fist on the ground for support, other arm raised defensively. Looking up at the opponent, ready to sweep or dodge.
+Row 3, Col 3 — "throw": Grabbing pose facing RIGHT. Both arms fully extended forward at chest height, hands open wide ready to grab the opponent. Leaning forward aggressively, one foot stepping ahead. Intense determined expression.
+Row 3, Col 4 — "taunt": Taunting the opponent facing RIGHT. One hand extended forward doing a 'come at me' beckoning gesture with fingers. Other hand on hip or behind head. Cocky smirk, eyebrows raised. Relaxed confident stance, leaning back slightly.
+Row 4, Col 1 — "walk": Mid-stride walking pose moving to the RIGHT. One foot forward, one foot back in a natural walking step. Arms in opposite motion to legs (right foot forward, left arm forward). Fists loosely clenched. Focused forward-looking expression.
+Row 4, Col 2 — EMPTY (leave blank/transparent)
+Row 4, Col 3 — EMPTY (leave blank/transparent)
+Row 4, Col 4 — EMPTY (leave blank/transparent)
+
+CRITICAL RULES:
+- The character must look IDENTICAL to the reference in EVERY cell: same face, same hair, same glasses (if any), same beard/facial hair, same skin tone, same clothing, same accessories.
+- Pixel art character sprite from a 1990s Super Nintendo fighting game (Pocket Fighter / Super Gem Fighter Mini Mix style). Chibi/super-deformed proportions: very large head (~50% of body height), small compact torso, short stubby legs. Clean black pixel outlines. Flat bright saturated colors, NO gradients, NO anti-aliasing. Full body visible head to toe. The character must occupy the same bounding box in every pose — same head size, same body proportions, same overall height. Leave consistent padding around the character — do not scale the character to fill the frame differently per pose. TRANSPARENT background (alpha=0, no background at all). No shadow, no floor, no text, no UI elements. Character centered in a square frame.
+- Additional character info: Male, light skin with light freckles, medium-length wavy dark brown hair swept back past the ears, large round tortoiseshell glasses (amber and dark brown pattern), brown eyes, full scruffy dark brown beard of medium length, warm wide smile showing teeth. Dark charcoal-gray crewneck sweatshirt. Gold chain necklace visible at the collar. Medium build.
+- Character personality/vibe: Smooth-talking finance bro turned fintech sales exec. Consultive seller with banking background. Charming, warm, always smiling. Fights with confidence and charisma — like closing a deal with his fists.
+- Main accent color: #d4ac0d
+- Each cell must show the FULL BODY of the character in that specific pose.
+- Keep the character the SAME SIZE in every cell — consistent proportions across all poses.
+- Clean grid lines or clear separation between cells.

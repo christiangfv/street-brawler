@@ -1,0 +1,14 @@
+Look at the attached reference image carefully. This is a pixel art portrait of a character.
+
+Now generate a FULL BODY pixel art sprite of THIS EXACT SAME CHARACTER in the following pose:
+
+Standing upright facing RIGHT in a classic fighting game ready stance. Feet shoulder-width apart, knees slightly bent, both fists raised to chest height. Weight centered, alert confident expression.
+
+CRITICAL RULES:
+- The character must look IDENTICAL to the reference: same face, same hair (color, style, length), same glasses (if any), same beard/facial hair, same skin tone, same clothing, same accessories.
+- CLOTHING IS SACRED: the character MUST wear the EXACT same outfit as in the reference image. Same shirt/jacket color and style, same pants color, same shoes. Do NOT change, replace, or reinterpret any clothing. Copy the outfit pixel by pixel from the reference.
+- Pixel art character sprite from a 1990s Super Nintendo fighting game (Pocket Fighter / Super Gem Fighter Mini Mix style). Chibi/super-deformed proportions: very large head (~50% of body height), small compact torso, short stubby legs. Clean black pixel outlines. Flat bright saturated colors, NO gradients, NO anti-aliasing. Full body visible head to toe. The character must occupy the same bounding box in every pose — same head size, same body proportions, same overall height. Leave consistent padding around the character — do not scale the character to fill the frame differently per pose. TRANSPARENT background (alpha=0, no background at all). No shadow, no floor, no text, no UI elements. Character centered in a square frame.
+- Additional character info: Male. Black and white horizontal-striped crewneck shirt under a dark black cardigan/jacket. Small gold hoop earring. Black slim-fit chino pants. White low-top canvas sneakers. Refer to reference photo for exact appearance.
+- Character personality/vibe: Industrial engineer, musician at heart — guitar was his biggest addiction from 13 to 17 (true withdrawal if he couldn't play for 2 days). Anime fan, gamer, language nerd. Fights with rhythm and intensity — every combo has a musical tempo.
+- Main accent color: #8e44ad
+- This is pose 'idle' from a sprite sheet. The character design MUST match the reference exactly.

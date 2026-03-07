@@ -1,0 +1,14 @@
+Look at the attached reference image carefully. This is a pixel art portrait of a character.
+
+Now generate a FULL BODY pixel art sprite of THIS EXACT SAME CHARACTER in the following pose:
+
+Mid-stride walking pose moving to the RIGHT. One foot forward, one foot back in a natural walking step. Arms in opposite motion to legs (right foot forward, left arm forward). Fists loosely clenched. Focused forward-looking expression. Slight variation: opposite foot forward now (left foot forward, right arm forward). The other phase of the walking cycle.
+
+CRITICAL RULES:
+- The character must look IDENTICAL to the reference: same face, same hair (color, style, length), same glasses (if any), same beard/facial hair, same skin tone, same clothing, same accessories.
+- CLOTHING IS SACRED: the character MUST wear the EXACT same outfit as in the reference image. Same shirt/jacket color and style, same pants color, same shoes. Do NOT change, replace, or reinterpret any clothing. Copy the outfit pixel by pixel from the reference.
+- Pixel art character sprite from a 1990s Super Nintendo fighting game (Pocket Fighter / Super Gem Fighter Mini Mix style). Chibi/super-deformed proportions: very large head (~50% of body height), small compact torso, short stubby legs. Clean black pixel outlines. Flat bright saturated colors, NO gradients, NO anti-aliasing. Full body visible head to toe. The character must occupy the same bounding box in every pose — same head size, same body proportions, same overall height. Leave consistent padding around the character — do not scale the character to fill the frame differently per pose. TRANSPARENT background (alpha=0, no background at all). No shadow, no floor, no text, no UI elements. Character centered in a square frame.
+- Additional character info: An anthropomorphic dolphin standing upright on two legs. Smooth light-blue skin, white belly, large round black eyes, dolphin snout with a grin. Dark navy knit beanie with white 'RA' lettering on the front. Tiny golden championship belt around waist and small red boxing gloves. Short stubby legs, flipper-like arms. Compact cute body.
+- Character personality/vibe: Radar's internal mascot — not yet ready for the public product. Embodies the T.O.D.O culture: Todos juntos, Obsesionate, Diversion, Osadia. Represents 'dolphin people' — smart AND cool. Secret final boss. Fights with dolphin agility, echolocation reads, and unstoppable good vibes.
+- Main accent color: #0099e5
+- This is pose 'walk' from a sprite sheet. The character design MUST match the reference exactly.

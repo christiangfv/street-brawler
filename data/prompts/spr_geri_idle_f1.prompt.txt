@@ -1,0 +1,14 @@
+Look at the attached reference image carefully. This is a pixel art portrait of a character.
+
+Now generate a FULL BODY pixel art sprite of THIS EXACT SAME CHARACTER in the following pose:
+
+Standing upright facing RIGHT in a classic fighting game ready stance. Feet shoulder-width apart, knees slightly bent, both fists raised to chest height. Weight centered, alert confident expression. Slight variation: fists raised a tiny bit higher, body shifted up slightly as if taking a breath in. Eyes a bit wider.
+
+CRITICAL RULES:
+- The character must look IDENTICAL to the reference: same face, same hair (color, style, length), same glasses (if any), same beard/facial hair, same skin tone, same clothing, same accessories.
+- CLOTHING IS SACRED: the character MUST wear the EXACT same outfit as in the reference image. Same shirt/jacket color and style, same pants color, same shoes. Do NOT change, replace, or reinterpret any clothing. Copy the outfit pixel by pixel from the reference.
+- Pixel art character sprite from a 1990s Super Nintendo fighting game (Pocket Fighter / Super Gem Fighter Mini Mix style). Chibi/super-deformed proportions: very large head (~50% of body height), small compact torso, short stubby legs. Clean black pixel outlines. Flat bright saturated colors, NO gradients, NO anti-aliasing. Full body visible head to toe. The character must occupy the same bounding box in every pose — same head size, same body proportions, same overall height. Leave consistent padding around the character — do not scale the character to fill the frame differently per pose. TRANSPARENT background (alpha=0, no background at all). No shadow, no floor, no text, no UI elements. Character centered in a square frame.
+- Additional character info: Female. Black v-neck top. Delicate thin chain necklace. Small decorative earring (flower/star). Dark gray yoga pants. Pink and white running shoes. Refer to reference photo for exact appearance.
+- Character personality/vibe: Accounting manager who builds scalable financial structures. Training for her first Chicago marathon. Loves trekking, yoga, running, morning coffee, and jazz. Endlessly curious traveler. Fights with marathon endurance and yogic balance.
+- Main accent color: #f1c40f
+- This is pose 'idle' from a sprite sheet. The character design MUST match the reference exactly.
