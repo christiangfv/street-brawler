@@ -2,62 +2,80 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <title>Street Brawler</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Radar Fighters</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Press Start 2P', monospace;
+    }
+    canvas {
+      display: block;
+      position: fixed;
+      top: 0; left: 0;
+    }
+    #ui-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+    #loading-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      color: #fff;
+    }
+    #loading-screen h1 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(14px, 3vw, 28px);
+      color: #00ffcc;
+      text-shadow: 0 0 20px #00ffcc, 0 0 40px #00ffcc;
+      margin-bottom: 24px;
+      letter-spacing: 4px;
+    }
+    #loading-bar-outer {
+      width: 300px;
+      height: 20px;
+      border: 2px solid #00ffcc;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    #loading-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #00ffcc, #0088ff);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    #loading-text {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: #888;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-
-  <!-- Portrait warning overlay -->
-  <div id="portrait-warning">
-    <div class="pw-inner">
-      <div class="pw-icon">📱</div>
-      <div class="pw-text">Rotate your device<br>for the best experience</div>
+  <div id="loading-screen">
+    <h1>RADAR FIGHTERS</h1>
+    <div id="loading-bar-outer">
+      <div id="loading-bar"></div>
     </div>
+    <div id="loading-text">Loading assets...</div>
   </div>
 
-  <!-- Fullscreen button -->
-  <button id="btn-fullscreen" title="Fullscreen">⛶</button>
-
-  <!-- Canvas fills entire viewport -->
-  <canvas id="gameCanvas"></canvas>
-
-  <!-- Mobile arcade controls -->
-  <div id="mobile-controls">
-    <!-- P1 left side -->
-    <div class="player-controls" id="p1-controls">
-      <div class="player-label p1-label">P1</div>
-      <div class="controls-row">
-        <div class="dpad">
-          <button class="dpad-btn" id="p1-left">◀</button>
-          <button class="dpad-btn" id="p1-right">▶</button>
-        </div>
-        <button class="attack-btn p1-atk" id="p1-attack">ATK</button>
-      </div>
-    </div>
-
-    <!-- Center: restart -->
-    <div id="center-controls">
-      <button id="btn-restart" title="Restart">↺</button>
-    </div>
-
-    <!-- P2 right side -->
-    <div class="player-controls" id="p2-controls">
-      <div class="player-label p2-label">P2</div>
-      <div class="controls-row">
-        <button class="attack-btn p2-atk" id="p2-attack">ATK</button>
-        <div class="dpad">
-          <button class="dpad-btn" id="p2-left">◀</button>
-          <button class="dpad-btn" id="p2-right">▶</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-  <script defer src="game.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@8/dist/pixi.min.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
