@@ -1024,17 +1024,19 @@ function buildFightScene(container) {
       vx: 0, vy: 0,
       dir: dir,    // 1 = right, -1 = left
       hp: MAX_HP,
-      state: 'idle',  // idle, run, jump, attack, special, hit, ko
+      state: 'idle',  // idle, run, jump, attack, special, hit, ko, block, crouch, taunt
       attackTimer: 0,
       attackCd: 0,
       specialCd: 0,
       hitStun: 0,
+      tauntTimer: 0,
       speedMult: 1,
       damageMult: 1,
       defenseMult: 1,
       blocking: false,
       isAI: false,
       aiTimer: 0,
+      _lastAtkIsThrow: false,
       chardef,
       faceTexture: null,
       hitEffects: [],
@@ -1118,6 +1120,7 @@ function buildFightScene(container) {
       fighter._animFrame = 0;
       fighter._animTimer = 0;
       fighter._lastAtkIsKick = false;
+      fighter._lastAtkIsThrow = false;
     }
 
     // Color aura ring (glows during special)
@@ -1149,7 +1152,9 @@ function buildFightScene(container) {
 
       switch (fighter.state) {
         case 'attack':
-          wantTex = fighter._lastAtkIsKick ? fighter._texKick : fighter._texAtk;
+          wantTex = fighter._lastAtkIsThrow
+            ? fighter._texThrow
+            : (fighter._lastAtkIsKick ? fighter._texKick : fighter._texAtk);
           break;
         case 'special':
           wantTex = fighter._texSpecial;
@@ -1162,6 +1167,12 @@ function buildFightScene(container) {
           break;
         case 'block':
           wantTex = fighter._texBlock;
+          break;
+        case 'crouch':
+          wantTex = fighter._texCrouch;
+          break;
+        case 'taunt':
+          wantTex = fighter._texTaunt;
           break;
         case 'jump':
           wantTex = fighter._texJump;
@@ -1316,6 +1327,27 @@ function buildFightScene(container) {
           aura.ellipse(0, -FIGHTER_H * 0.5, FIGHTER_H * 0.35, FIGHTER_H * 0.5)
             .fill({ color: 0x4488ff, alpha: 0.18 });
         }
+        break;
+      }
+      case 'crouch': {
+        // Crouch: squish down, hitbox is lower
+        spr.scale.set(bx * 1.05, by * 0.72);
+        spr.rotation = 0;
+        spr.y = FIGHTER_H * 0.28; // shift sprite down to sit on ground
+        if (aura) {
+          aura.clear();
+          aura.ellipse(0, -FIGHTER_H * 0.35, FIGHTER_H * 0.38, FIGHTER_H * 0.38)
+            .fill({ color: 0x4488ff, alpha: 0.12 });
+        }
+        break;
+      }
+      case 'taunt': {
+        // Taunt: slight bounce + lean
+        const tauntBob = Math.sin(t * 6) * 3;
+        spr.scale.set(bx * (1 + Math.sin(t * 8) * 0.04), by * (1 + Math.sin(t * 5) * 0.03));
+        spr.rotation = Math.sin(t * 4) * 0.08;
+        spr.y = tauntBob;
+        if (aura) aura.clear();
         break;
       }
       case 'ko': {
@@ -1615,9 +1647,18 @@ function buildFightScene(container) {
     if (dist > ATTACK_RANGE * 1.5) {
       // Move toward p1
       p2.vx = (p1.x < p2.x ? -1 : 1) * MOVE_SPEED * p2.speedMult;
+      // Occasionally taunt when far away and safe
+      if (rand < 0.04 && p2.tauntTimer <= 0 && p2.state === 'idle') {
+        doTaunt(p2);
+      }
     } else if (dist < ATTACK_RANGE * 0.7) {
-      // Too close, back off
-      p2.vx = (p1.x < p2.x ? 1 : -1) * MOVE_SPEED * p2.speedMult * 0.5;
+      // Very close — try throw first
+      if (dist < 70 && p2.attackCd <= 0 && rand < 0.35 && p2.y >= GROUND - 2) {
+        doThrow(p2, p1);
+      } else {
+        // Too close, back off
+        p2.vx = (p1.x < p2.x ? 1 : -1) * MOVE_SPEED * p2.speedMult * 0.5;
+      }
     } else {
       // In range: attack — AI uses all 6 moves
       if (p2.attackCd <= 0) {
@@ -1649,6 +1690,7 @@ function buildFightScene(container) {
     const isHeavy  = attackType === 'HP' || attackType === 'HK';
     const isMedium = attackType === 'MP' || attackType === 'MK';
     attacker._lastAtkIsKick = atk.isKick;
+    attacker._lastAtkIsThrow = false;
     attacker.state = isHeavy ? 'special' : 'attack';
     attacker.attackTimer = ATTACK_DUR * (isHeavy ? 1.4 : isMedium ? 1.0 : 0.7);
     attacker.attackCd = atk.cd;
@@ -1682,6 +1724,64 @@ function buildFightScene(container) {
         playSFX('ko');
         endRound(attacker === p1 ? 1 : 2);
       }
+    }
+  }
+
+  // ── Taunt ────────────────────────────────────────────────
+  function doTaunt(fighter) {
+    if (fighter.tauntTimer > 0) return;
+    if (fighter.state === 'attack' || fighter.state === 'special' ||
+        fighter.state === 'hit' || fighter.state === 'ko' || fighter.state === 'win') return;
+    if (fighter.y < GROUND - 2) return; // must be grounded
+    fighter.state = 'taunt';
+    fighter.tauntTimer = 80;
+    playSFX('select');
+  }
+
+  // ── Throw ─────────────────────────────────────────────────
+  function doThrow(attacker, defender) {
+    if (attacker.attackCd > 0) return;
+    if (attacker.state === 'hit' || attacker.state === 'ko' || attacker.state === 'win') return;
+    if (attacker.blocking) return;
+    if (attacker.y < GROUND - 2) return; // must be grounded
+    if (defender.state === 'ko') return;
+
+    const dist = Math.abs(attacker.x - defender.x);
+    if (dist >= 70) return; // throw range
+
+    // Throw always connects (unblockable) — even through blocking
+    attacker._lastAtkIsKick = false;
+    attacker._lastAtkIsThrow = true;
+    attacker.state = 'attack';
+    attacker.attackTimer = 25;
+    attacker.attackCd = ATTACKS.HP.cd; // 44 frames
+
+    playSFX('punch');
+
+    const dmg = 20 * attacker.damageMult * defender.defenseMult;
+    defender.hp -= dmg;
+    defender.hitStun = HIT_STUN * 1.2;
+    defender.state = 'hit';
+    if (defender.mainSprite) defender._hitFlash = 1;
+    defender._squash = 0.7;
+    defender._squashV = 0.1;
+    // Moderate knockback
+    defender.vx += (attacker.dir > 0 ? 1 : -1) * 4.0;
+    defender.vy = -4.5;
+    // Cancel defender's blocking during throw
+    defender.blocking = false;
+
+    const hitX = (attacker.x + defender.x) / 2;
+    const hitY = defender.y - FIGHTER_H * 0.55;
+    spawnHitEffect(hitX, hitY, false);
+    triggerShake(7);
+
+    if (defender.hp <= 0) {
+      defender.hp = 0;
+      defender.state = 'ko';
+      triggerShake(15);
+      playSFX('ko');
+      endRound(attacker === p1 ? 1 : 2);
     }
   }
 
@@ -1745,26 +1845,39 @@ function buildFightScene(container) {
       if (p1.state !== 'ko' && p1.state !== 'win' && p1.hitStun <= 0) {
         let moving = false;
 
-        // Blocking (down/S — can't attack while blocking)
+        // Blocking/Crouch (S — crouches visually, blocks mechanically)
         p1.blocking = !!(keys['s'] || keys['S'] || touchBtns.down) && p1.y >= GROUND - 2;
 
         if (!p1.blocking) {
           if (keys['a'] || keys['A'] || touchBtns.left) {
             p1.vx = -MOVE_SPEED * p1.speedMult;
             p1.dir = -1;
-            if (p1.state !== 'attack' && p1.state !== 'special') p1.state = 'run';
+            if (p1.state !== 'attack' && p1.state !== 'special' && p1.state !== 'taunt') p1.state = 'run';
             moving = true;
           } else if (keys['d'] || keys['D'] || touchBtns.right) {
             p1.vx = MOVE_SPEED * p1.speedMult;
             p1.dir = 1;
-            if (p1.state !== 'attack' && p1.state !== 'special') p1.state = 'run';
+            if (p1.state !== 'attack' && p1.state !== 'special' && p1.state !== 'taunt') p1.state = 'run';
             moving = true;
           }
         }
 
         if ((keys['w'] || keys['W'] || keys['ArrowUp'] || touchBtns.jump) && p1.y >= GROUND - 2 && !p1.blocking) {
+          // Cancel taunt on jump
+          if (p1.state === 'taunt') { p1.tauntTimer = 0; }
           p1.vy = -15;
           p1.state = 'jump';
+        }
+
+        // Taunt — T key
+        if ((keys['t'] || keys['T']) && p1.tauntTimer <= 0 && p1.state !== 'taunt') {
+          doTaunt(p1);
+        }
+
+        // Throw — G key (unblockable grab)
+        if ((keys['g'] || keys['G'] || touchBtns.throwBtn) && p1.attackCd <= 0 &&
+            p1.state !== 'attack' && p1.state !== 'special' && p1.hitStun <= 0) {
+          doThrow(p1, p2);
         }
 
         // 6-button SF layout — P1: U/I/O = LP/MP/HP, J/K/L = LK/MK/HK
@@ -1779,39 +1892,61 @@ function buildFightScene(container) {
 
         if (!moving && p1.y >= GROUND - 2) {
           p1.vx *= 0.7;
-          if (p1.state !== 'attack' && p1.state !== 'special') p1.state = 'idle';
+          if (p1.state !== 'attack' && p1.state !== 'special' && p1.state !== 'taunt') p1.state = 'idle';
         }
       }
 
       // Input for P2 (2P mode)
       if (!p2.isAI && p2.state !== 'ko' && p2.state !== 'win' && p2.hitStun <= 0) {
         let moving = false;
-        if (keys['ArrowLeft']) {
-          p2.vx = -MOVE_SPEED * p2.speedMult;
-          p2.dir = -1;
-          if (p2.state !== 'attack' && p2.state !== 'special') p2.state = 'run';
-          moving = true;
-        } else if (keys['ArrowRight']) {
-          p2.vx = MOVE_SPEED * p2.speedMult;
-          p2.dir = 1;
-          if (p2.state !== 'attack' && p2.state !== 'special') p2.state = 'run';
-          moving = true;
+
+        // Blocking/Crouch — ArrowDown
+        p2.blocking = !!(keys['ArrowDown']) && p2.y >= GROUND - 2;
+
+        if (!p2.blocking) {
+          if (keys['ArrowLeft']) {
+            p2.vx = -MOVE_SPEED * p2.speedMult;
+            p2.dir = -1;
+            if (p2.state !== 'attack' && p2.state !== 'special' && p2.state !== 'taunt') p2.state = 'run';
+            moving = true;
+          } else if (keys['ArrowRight']) {
+            p2.vx = MOVE_SPEED * p2.speedMult;
+            p2.dir = 1;
+            if (p2.state !== 'attack' && p2.state !== 'special' && p2.state !== 'taunt') p2.state = 'run';
+            moving = true;
+          }
         }
-        if (keys['ArrowUp'] && p2.y >= GROUND - 2) {
+
+        if (keys['ArrowUp'] && p2.y >= GROUND - 2 && !p2.blocking) {
+          if (p2.state === 'taunt') { p2.tauntTimer = 0; }
           p2.vy = -15;
           p2.state = 'jump';
         }
+
+        // Taunt — / key (Slash)
+        if (keys['/'] && p2.tauntTimer <= 0 && p2.state !== 'taunt') {
+          doTaunt(p2);
+        }
+
+        // Throw — Enter key
+        if ((keys['Enter'] || keys['NumpadEnter']) && p2.attackCd <= 0 &&
+            p2.state !== 'attack' && p2.state !== 'special' && p2.hitStun <= 0) {
+          doThrow(p2, p1);
+        }
+
         // P2: numrow 7/8/9 = LP/MP/HP, 4/5/6 = LK/MK/HK
-        if (keys['7'] && p2.attackCd <= 0) doAttack(p2, p1, 'LP');
-        if (keys['8'] && p2.attackCd <= 0) doAttack(p2, p1, 'MP');
-        if (keys['9'] && p2.attackCd <= 0) doAttack(p2, p1, 'HP');
-        if (keys['4'] && p2.attackCd <= 0) doAttack(p2, p1, 'LK');
-        if (keys['5'] && p2.attackCd <= 0) doAttack(p2, p1, 'MK');
-        if (keys['6'] && p2.attackCd <= 0) doAttack(p2, p1, 'HK');
+        if (!p2.blocking) {
+          if (keys['7'] && p2.attackCd <= 0) doAttack(p2, p1, 'LP');
+          if (keys['8'] && p2.attackCd <= 0) doAttack(p2, p1, 'MP');
+          if (keys['9'] && p2.attackCd <= 0) doAttack(p2, p1, 'HP');
+          if (keys['4'] && p2.attackCd <= 0) doAttack(p2, p1, 'LK');
+          if (keys['5'] && p2.attackCd <= 0) doAttack(p2, p1, 'MK');
+          if (keys['6'] && p2.attackCd <= 0) doAttack(p2, p1, 'HK');
+        }
 
         if (!moving && p2.y >= GROUND - 2) {
           p2.vx *= 0.7;
-          if (p2.state !== 'attack' && p2.state !== 'special') p2.state = 'idle';
+          if (p2.state !== 'attack' && p2.state !== 'special' && p2.state !== 'taunt') p2.state = 'idle';
         }
       }
 
@@ -1844,15 +1979,36 @@ function buildFightScene(container) {
         const hw = FIGHTER_W / 2;
         f.x = Math.max(hw, Math.min(W() - hw, f.x));
 
-        // Blocking state
-        if (f.blocking && f.state !== 'ko' && f.state !== 'hit' && f.state !== 'win') f.state = 'block';
-        else if (!f.blocking && f.state === 'block') f.state = 'idle';
+        // Blocking/Crouch state — visually crouch, mechanically block
+        if (f.blocking && f.state !== 'ko' && f.state !== 'hit' && f.state !== 'win' && f.state !== 'attack' && f.state !== 'special') {
+          f.state = 'crouch';
+        } else if (!f.blocking && (f.state === 'block' || f.state === 'crouch')) {
+          f.state = 'idle';
+        }
+
+        // Taunt timer countdown
+        if (f.tauntTimer > 0) {
+          f.tauntTimer -= dt;
+          if (f.tauntTimer <= 0) {
+            if (f.state === 'taunt') f.state = 'idle';
+          }
+        }
+        // Taunt can be interrupted by damage (state is set to 'hit' externally)
+        if (f.state !== 'taunt' && f.tauntTimer > 0 && (f.state === 'hit' || f.state === 'ko')) {
+          f.tauntTimer = 0;
+        }
+
+        // Clear throw flag when attack ends
+        if (f.state !== 'attack' && f._lastAtkIsThrow) {
+          f._lastAtkIsThrow = false;
+        }
 
         // Face opponent
-        if (f === p1 && f.state !== 'attack' && f.state !== 'special' && f.state !== 'ko' && f.state !== 'win') {
+        const canTurn = f.state !== 'attack' && f.state !== 'special' && f.state !== 'ko' && f.state !== 'win' && f.state !== 'taunt';
+        if (f === p1 && canTurn) {
           f.dir = p2.x > p1.x ? 1 : -1;
         }
-        if (f === p2 && !f.isAI && f.state !== 'attack' && f.state !== 'special' && f.state !== 'ko' && f.state !== 'win') {
+        if (f === p2 && !f.isAI && canTurn) {
           f.dir = p1.x > p2.x ? 1 : -1;
         }
         if (f === p2 && f.isAI) {
@@ -1920,6 +2076,7 @@ function buildTouchControls(container) {
     left: false, right: false, jump: false, down: false,
     lp: false, mp: false, hp: false,
     lk: false, mk: false, hk: false,
+    throwBtn: false,
   };
 
   const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 850;
@@ -2001,6 +2158,25 @@ function buildTouchControls(container) {
     g.on('pointerup',       () => { state[key] = false; g.alpha = 1;    });
     g.on('pointerupoutside',() => { state[key] = false; g.alpha = 1;    });
   });
+
+  // ── Throw button (center between d-pad and attack grid) ──
+  const throwCX = W() / 2;
+  const throwCY = baseY + r * 0.25;
+  const throwG = new PIXI.Graphics();
+  throwG.circle(0, 0, r * 0.85)
+    .fill({ color: 0x1a1a2a, alpha: 0.88 })
+    .stroke({ color: 0xee44cc, width: 2.5 });
+  throwG.x = throwCX;
+  throwG.y = throwCY;
+  throwG.interactive = true;
+  throwG.cursor = 'pointer';
+  const throwT = makeText('THR', { size: Math.max(8, Math.floor(r * 0.30)), color: 0xee44cc });
+  throwT.anchor.set(0.5);
+  throwG.addChild(throwT);
+  btnLayer.addChild(throwG);
+  throwG.on('pointerdown',     () => { state.throwBtn = true;  throwG.alpha = 0.45; });
+  throwG.on('pointerup',       () => { state.throwBtn = false; throwG.alpha = 1;    });
+  throwG.on('pointerupoutside',() => { state.throwBtn = false; throwG.alpha = 1;    });
 
   return state;
 }
