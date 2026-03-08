@@ -1852,12 +1852,12 @@ function buildFightScene(container) {
           if (keys['a'] || keys['A'] || touchBtns.left) {
             p1.vx = -MOVE_SPEED * p1.speedMult;
             p1.dir = -1;
-            if (p1.state !== 'attack' && p1.state !== 'special' && p1.state !== 'taunt') p1.state = 'run';
+            if (p1.state !== 'attack' && p1.state !== 'special' && p1.state !== 'taunt' && p1.state !== 'jump') p1.state = 'run';
             moving = true;
           } else if (keys['d'] || keys['D'] || touchBtns.right) {
             p1.vx = MOVE_SPEED * p1.speedMult;
             p1.dir = 1;
-            if (p1.state !== 'attack' && p1.state !== 'special' && p1.state !== 'taunt') p1.state = 'run';
+            if (p1.state !== 'attack' && p1.state !== 'special' && p1.state !== 'taunt' && p1.state !== 'jump') p1.state = 'run';
             moving = true;
           }
         }
@@ -1907,12 +1907,12 @@ function buildFightScene(container) {
           if (keys['ArrowLeft']) {
             p2.vx = -MOVE_SPEED * p2.speedMult;
             p2.dir = -1;
-            if (p2.state !== 'attack' && p2.state !== 'special' && p2.state !== 'taunt') p2.state = 'run';
+            if (p2.state !== 'attack' && p2.state !== 'special' && p2.state !== 'taunt' && p2.state !== 'jump') p2.state = 'run';
             moving = true;
           } else if (keys['ArrowRight']) {
             p2.vx = MOVE_SPEED * p2.speedMult;
             p2.dir = 1;
-            if (p2.state !== 'attack' && p2.state !== 'special' && p2.state !== 'taunt') p2.state = 'run';
+            if (p2.state !== 'attack' && p2.state !== 'special' && p2.state !== 'taunt' && p2.state !== 'jump') p2.state = 'run';
             moving = true;
           }
         }
@@ -1980,7 +1980,7 @@ function buildFightScene(container) {
         f.x = Math.max(hw, Math.min(W() - hw, f.x));
 
         // Blocking/Crouch state — visually crouch, mechanically block
-        if (f.blocking && f.state !== 'ko' && f.state !== 'hit' && f.state !== 'win' && f.state !== 'attack' && f.state !== 'special') {
+        if (f.blocking && f.state !== 'ko' && f.state !== 'hit' && f.state !== 'win' && f.state !== 'attack' && f.state !== 'special' && f.state !== 'jump') {
           f.state = 'crouch';
         } else if (!f.blocking && (f.state === 'block' || f.state === 'crouch')) {
           f.state = 'idle';
@@ -2067,10 +2067,12 @@ function buildFightScene(container) {
   app.ticker.add(ticker);
 }
 
-// ── Touch controls — Street Fighter SNES layout ─────────────
-// Left side: D-pad cross  |  Right side: 3×2 attack grid
-// [LP][MP][HP]
-// [LK][MK][HK]
+// ── Touch controls — Mobile layout ──────────────────────────
+// Left side : D-pad (4 directions)
+// Right side: 2×2 attack grid + THROW
+//   [LP] [HP]
+//   [LK] [HK]
+//        [THR]  ← below HK
 function buildTouchControls(container) {
   const state = {
     left: false, right: false, jump: false, down: false,
@@ -2086,18 +2088,18 @@ function buildTouchControls(container) {
   btnLayer.interactiveChildren = true;
   container.addChild(btnLayer);
 
-  const r     = Math.min(W() * 0.07, 46);  // button radius
-  const pad   = 14;
+  const r     = Math.min(W() * 0.075, 50);  // button radius — slightly larger now that there are fewer
+  const pad   = 16;
   const baseY = H() - pad - r;
 
   // ── D-pad (left side) ───────────────────────────────────
   const dpadCX = pad + r * 2.8;
   const dpadCY = baseY - r * 0.6;
-  const dpadR  = r * 1.0;
+  const dpadR  = r * 1.05;
 
   function makeDpad(label, ox, oy, key) {
     const g = new PIXI.Graphics();
-    const bw = r * 1.55;
+    const bw = r * 1.6;
     g.roundRect(-bw/2, -bw/2, bw, bw, 10)
       .fill({ color: 0x162040, alpha: 0.92 })
       .stroke({ color: 0x55aaee, width: 2.5 });
@@ -2105,7 +2107,7 @@ function buildTouchControls(container) {
     g.y = dpadCY + oy * dpadR;
     g.interactive = true;
     g.cursor = 'pointer';
-    const t = makeText(label, { size: Math.max(10, Math.floor(r * 0.44)), color: 0xddeeff });
+    const t = makeText(label, { size: Math.max(11, Math.floor(r * 0.46)), color: 0xddeeff });
     t.anchor.set(0.5);
     g.addChild(t);
     btnLayer.addChild(g);
@@ -2117,30 +2119,19 @@ function buildTouchControls(container) {
   makeDpad('◄', -1,  0, 'left');
   makeDpad('►',  1,  0, 'right');
   makeDpad('▲',  0, -1, 'jump');
-  makeDpad('▼',  0,  1, 'down');  // Down = block/guard
+  makeDpad('▼',  0,  1, 'down');  // Down = crouch/block
 
-  // ── 6-button grid (right side) ──────────────────────────
-  // Row 0 (top):    LP  MP  HP   (punches — blue tones)
-  // Row 1 (bottom): LK  MK  HK   (kicks   — red/orange)
-  const attackDefs = [
-    // [key, label, col, row, color, border]
-    ['lp', 'LP', 0, 0, 0x1a2a4a, 0x4488ff],
-    ['mp', 'MP', 1, 0, 0x1a2a4a, 0x66aaff],
-    ['hp', 'HP', 2, 0, 0x1a2a4a, 0x99ccff],
-    ['lk', 'LK', 0, 1, 0x2a1a1a, 0xff5533],
-    ['mk', 'MK', 1, 1, 0x2a1a1a, 0xff7744],
-    ['hk', 'HK', 2, 1, 0x2a1a1a, 0xffaa55],
-  ];
+  // ── 2×2 attack grid + throw (right side) ────────────────
+  // [LP] [HP]   ← punches (blue)
+  // [LK] [HK]   ← kicks (red/orange)
+  //      [THR]  ← throw (purple), below HK
+  const atkSpacing = r * 2.2;
+  const atkStartX  = W() - pad - r - atkSpacing;  // rightmost col
+  const atkRow0Y   = baseY - r * 1.2;
+  const atkRow1Y   = baseY + r * 0.2;
+  const throwY     = baseY + r * 1.6;
 
-  const atkSpacing = r * 2.1;
-  const atkStartX  = W() - pad - r - atkSpacing * 2;
-  const atkRow0Y   = baseY - r * 1.25;
-  const atkRow1Y   = baseY + r * 0.25;
-
-  attackDefs.forEach(([key, label, col, row, bg, border]) => {
-    const cx = atkStartX + col * atkSpacing;
-    const cy = row === 0 ? atkRow0Y : atkRow1Y;
-
+  function makeAtkBtn(key, label, cx, cy, bg, border) {
     const g = new PIXI.Graphics();
     g.circle(0, 0, r)
       .fill({ color: bg, alpha: 0.88 })
@@ -2148,29 +2139,32 @@ function buildTouchControls(container) {
     g.x = cx; g.y = cy;
     g.interactive = true;
     g.cursor = 'pointer';
-
-    const t = makeText(label, { size: Math.max(8, Math.floor(r * 0.34)), color: border });
+    const t = makeText(label, { size: Math.max(9, Math.floor(r * 0.36)), color: border });
     t.anchor.set(0.5);
     g.addChild(t);
     btnLayer.addChild(g);
-
     g.on('pointerdown',     () => { state[key] = true;  g.alpha = 0.45; });
     g.on('pointerup',       () => { state[key] = false; g.alpha = 1;    });
     g.on('pointerupoutside',() => { state[key] = false; g.alpha = 1;    });
-  });
+    return g;
+  }
 
-  // ── Throw button (center between d-pad and attack grid) ──
-  const throwCX = W() / 2;
-  const throwCY = baseY + r * 0.25;
+  // Punches (top row)
+  makeAtkBtn('lp', 'LP', atkStartX - atkSpacing, atkRow0Y, 0x0d1a30, 0x4488ff);
+  makeAtkBtn('hp', 'HP', atkStartX,               atkRow0Y, 0x0d1a30, 0x99ccff);
+  // Kicks (bottom row)
+  makeAtkBtn('lk', 'LK', atkStartX - atkSpacing, atkRow1Y, 0x1a0d0d, 0xff5533);
+  makeAtkBtn('hk', 'HK', atkStartX,               atkRow1Y, 0x1a0d0d, 0xffaa55);
+  // Throw (below HK, slightly smaller)
   const throwG = new PIXI.Graphics();
-  throwG.circle(0, 0, r * 0.85)
-    .fill({ color: 0x1a1a2a, alpha: 0.88 })
-    .stroke({ color: 0xee44cc, width: 2.5 });
-  throwG.x = throwCX;
-  throwG.y = throwCY;
+  throwG.circle(0, 0, r * 0.78)
+    .fill({ color: 0x150d20, alpha: 0.88 })
+    .stroke({ color: 0xcc44ee, width: 2.5 });
+  throwG.x = atkStartX;
+  throwG.y = throwY;
   throwG.interactive = true;
   throwG.cursor = 'pointer';
-  const throwT = makeText('THR', { size: Math.max(8, Math.floor(r * 0.30)), color: 0xee44cc });
+  const throwT = makeText('THR', { size: Math.max(8, Math.floor(r * 0.30)), color: 0xcc44ee });
   throwT.anchor.set(0.5);
   throwG.addChild(throwT);
   btnLayer.addChild(throwG);
