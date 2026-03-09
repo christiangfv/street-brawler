@@ -16,7 +16,7 @@
 
 ### 👑 FOUNDERS
 
-![Herbert](assets/spr_herbert_special.png) ![Gabo](assets/spr_gabo_atk.png) ![Amanda](assets/spr_amanda_kick.png)
+![Herbert](assets/spr_herbert_special.png) ![Gabo](assets/spr_gabo_atk.png) ![Amanda](assets/spr_amanda_special.png)
 
 **HERBERT** · CEO · ⚔️9 💨6 🛡️6 · · · **GABO** · CTO · ⚔️8 💨8 🛡️5 · · · **AMANDA** · CRO · ⚔️8 💨8 🛡️5
 
@@ -24,7 +24,7 @@
 
 ![Arturo](assets/spr_arturo_special.png) ![Jaime](assets/spr_jaime_atk.png) ![Chris](assets/spr_chris_kick.png) ![Kevin](assets/spr_kevin_special.png) ![Lorens](assets/spr_lorens_atk.png)
 
-![Nelson](assets/spr_nelson_kick.png) ![Andrés](assets/spr_andres_special.png) ![Javier](assets/spr_javier_atk.png) ![Gerardo](assets/spr_gerardo_kick.png)
+![Nelson](assets/spr_nelson_kick.png) ![Andrés](assets/spr_andres_special.png) ![Javier](assets/spr_javier_atk.png) ![Gerardo](assets/spr_gerardo_special.png)
 
 **ARTURO** · **JAIME** · **CHRIS** · **KEVIN** · **LORENS** · **NELSON** · **ANDRÉS** · **JAVIER** · **GERARDO**
 
