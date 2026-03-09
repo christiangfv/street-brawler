@@ -1,26 +1,26 @@
 # ⚔️ RADAR FIGHTERS ⚔️
 
-### *The Ultimate Office Showdown*
+### *La Pelea Definitiva de la Oficina*
 
 ![Herbert Kick](assets/spr_herbert_kick.png) ![Radarín Special](assets/spr_radarin_special.png) ![Chris Attack](assets/spr_chris_atk.png)
 
-**24 warriors. Best of 3 rounds. Zero excuses.**
+**24 guerreros. Mejor de 3 rounds. Cero excusas.**
 
-### [🎮 PLAY NOW](https://christiangfv.github.io/street-brawler/)
+### [🎮 JUGAR AHORA](https://christiangfv.github.io/street-brawler/)
 
-*When deadlines get tight and Slack messages go unanswered... There's only one way to settle it.*
+*Cuando los deadlines aprietan y nadie contesta en Slack... Solo hay una forma de resolverlo.*
 
 ---
 
-## 🎮 THE ROSTER
+## 🎮 EL ROSTER
 
-### 👑 FOUNDERS
+### 👑 FUNDADORES
 
 ![Herbert](assets/spr_herbert_special.png) ![Gabo](assets/spr_gabo_atk.png) ![Amanda](assets/spr_amanda_special.png)
 
 **HERBERT** · CEO · ⚔️9 💨6 🛡️6 · · · **GABO** · CTO · ⚔️8 💨8 🛡️5 · · · **AMANDA** · CRO · ⚔️8 💨8 🛡️5
 
-### 💻 ENGINEERING
+### 💻 INGENIERÍA
 
 ![Arturo](assets/spr_arturo_special.png) ![Jaime](assets/spr_jaime_atk.png) ![Chris](assets/spr_chris_kick.png) ![Kevin](assets/spr_kevin_special.png) ![Lorens](assets/spr_lorens_atk.png)
 
@@ -28,77 +28,77 @@
 
 **ARTURO** · **JAIME** · **CHRIS** · **KEVIN** · **LORENS** · **NELSON** · **ANDRÉS** · **JAVIER**
 
-### 📊 PRODUCT & BUSINESS
+### 📊 PRODUCTO & NEGOCIO
 
 ![Carlo](assets/spr_carlo_atk.png) ![Gerardo](assets/spr_gerardo_special.png) ![Francisco](assets/spr_francisco_special.png)
 
-**CARLO** · Product Lead · · · **GERARDO** · Low Code · · · **FRANCISCO** · Analyst
+**CARLO** · Líder de Producto · · · **GERARDO** · Low Code · · · **FRANCISCO** · Analista
 
-### 💰 SALES FORCE
+### 💰 VENTAS
 
 ![Héctor](assets/spr_hector_special.png) ![Alex](assets/spr_alex_atk.png) ![Esteban](assets/spr_esteban_kick.png)
 
-**HÉCTOR** · Sales Manager · · · **ALEX** · Sales Exec · · · **ESTEBAN** · Biz Dev
+**HÉCTOR** · Gerente de Ventas · · · **ALEX** · Ejecutivo · · · **ESTEBAN** · Biz Dev
 
-### ⚙️ OPS & SUPPORT
+### ⚙️ OPS & SOPORTE
 
 ![Dani](assets/spr_dani_kick.png) ![Yong](assets/spr_yong_atk.png) ![Geri](assets/spr_geri_special.png) ![Max](assets/spr_max_kick.png)
 
-**DANI** · Ops · · · **YONG** · Ops Manager · · · **GERI** · Accounting · · · **MAX** · People & Culture
+**DANI** · Operaciones · · · **YONG** · Gerente Ops · · · **GERI** · Contabilidad · · · **MAX** · People & Culture
 
-### 📣 MARKETING & COMMS
+### 📣 MARKETING & COMUNICACIONES
 
 ![Andy](assets/spr_andy_special.png) ![Karen](assets/spr_karen_atk.png)
 
-**ANDY** · Marketing Lead · · · **KAREN** · Comms Analyst
+**ANDY** · Líder de Marketing · · · **KAREN** · Analista de Comunicaciones
 
-### 🐬 SECRET BOSS
+### 🐬 JEFE SECRETO
 
 ![Radarín](assets/spr_radarin_special.png)
 
 **RADARÍN** · Chief Culture Officer · ⚔️10 💨10 🛡️10
 
-*"He's not just the mascot. He's the FINAL BOSS."*
+*"No es solo la mascota. Es el JEFE FINAL."*
 
 ---
 
-## 🕹️ CONTROLS
+## 🕹️ CONTROLES
 
 ![Chris Special](assets/spr_chris_special.png)
 
-**Player 1** — `A` `D` move · `W` jump · `S` crouch/block · `U` `I` `O` punches · `J` `K` `L` kicks
+**Jugador 1** — `A` `D` mover · `W` saltar · `S` agacharse/bloquear · `U` `I` `O` puños · `J` `K` `L` patadas
 
-**Player 2** — `←` `→` move · `↑` jump · `↓` crouch/block · `Num 4` `5` `6` punches · `Num 1` `2` `3` kicks
+**Jugador 2** — `←` `→` mover · `↑` saltar · `↓` agacharse/bloquear · `Num 4` `5` `6` puños · `Num 1` `2` `3` patadas
 
-**📱 Mobile** — D-Pad + 6-button layout. Portrait and landscape.
+**📱 Móvil** — D-Pad + 6 botones en pantalla. Vertical y horizontal.
 
 ---
 
-## ⚡ MECHANICS
+## ⚡ MECÁNICAS
 
 ![Alex Kick](assets/spr_alex_kick.png) ![Amanda Special](assets/spr_amanda_special.png)
 
-- 🏆 **Best of 3** — Win 2 rounds to take the match
-- 👊 **6-Button Combat** — Light / Medium / Heavy punches & kicks
-- 🛡️ **Blocking** — Crouch to reduce incoming damage
-- ⚡ **Specials** — Heavy attacks with extra range and damage
-- ⏱️ **90s Rounds** — Time runs out? Highest HP wins
-- 💥 **Hit Effects** — Particles, screen shake, satisfying feedback
+- 🏆 **Mejor de 3** — Gana 2 rounds para llevarte el match
+- 👊 **Combate 6 botones** — Puños y patadas ligeros / medios / pesados
+- 🛡️ **Bloqueo** — Agáchate para reducir el daño
+- ⚡ **Especiales** — Ataques pesados con más rango y daño
+- ⏱️ **Rounds de 90s** — ¿Se acaba el tiempo? Gana el de más HP
+- 💥 **Efectos** — Partículas, screen shake, feedback satisfactorio
 
 ---
 
-## 🎨 FEATURES
+## 🎨 CARACTERÍSTICAS
 
-- 🎭 **24 Unique Fighters** with custom pixel art sprites
-- 🗺️ **Multiple Stages** — Zapallar, Colchagua, Valle Bravo and more
-- 🎵 **Chiptune BGM** — Dynamic 8-bit music per scene
-- 📱 **Fully Responsive** — Desktop, tablet, mobile
-- 🎮 **1P vs AI or 2P Local** — Solo or couch co-op
-- ⚡ **Zero Dependencies** — Pure vanilla JS, no build step
+- 🎭 **24 Luchadores únicos** con sprites pixel art personalizados
+- 🗺️ **Múltiples escenarios** — Zapallar, Colchagua, Valle Bravo y más
+- 🎵 **Música Chiptune** — BGM 8-bit dinámico por escena
+- 📱 **Totalmente responsive** — Desktop, tablet, móvil
+- 🎮 **1P vs IA o 2P Local** — Solo o con amigos
+- ⚡ **Cero dependencias** — Vanilla JS puro, sin build step
 
 ---
 
-## 🚀 PLAY
+## 🚀 JUGAR
 
 **Online:** [christiangfv.github.io/street-brawler](https://christiangfv.github.io/street-brawler/)
 
@@ -109,23 +109,23 @@ cd street-brawler
 npx serve .
 ```
 
-No `npm install`. No webpack. No bullshit.
+Sin `npm install`. Sin webpack. Sin webadas.
 
 ---
 
 ## 🛠️ STACK
 
-- **PixiJS 8** — WebGL/Canvas rendering
-- **Web Audio API** — Chiptune music generation
-- **Vanilla JS** — Game logic (~2300 lines)
-- **HTML5 + CSS3** — Zero framework
+- **PixiJS 8** — Renderizado WebGL/Canvas
+- **Web Audio API** — Generación de música chiptune
+- **Vanilla JS** — Lógica del juego (~2300 líneas)
+- **HTML5 + CSS3** — Cero frameworks
 
 ---
 
 ![Herbert Attack](assets/spr_herbert_atk.png) ![Radarín Attack](assets/spr_radarin_atk.png) ![Gabo Kick](assets/spr_gabo_kick.png)
 
-*Pick your fighter. Enter the arena. Show no mercy.*
+*Elige tu luchador. Entra a la arena. Sin piedad.*
 
-Made with 💪 and ☕ by the [Radar](https://radar.cl) team
+Hecho con 💪 y ☕ por el equipo de [Radar](https://radar.cl)
 
-**© 2026 RADAR FIGHTERS** — *All rights reserved to kick ass*
+**© 2026 RADAR FIGHTERS** — *Todos los derechos reservados para darte combo*
