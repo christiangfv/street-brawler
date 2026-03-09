@@ -1,24 +1,14 @@
-<![CDATA[<p align="center">
-  <img src="assets/spr_herbert_kick.png" height="140">
-  <img src="assets/spr_radarin_special.png" height="160">
-  <img src="assets/spr_chris_atk.png" height="140">
-</p>
+# ⚔️ RADAR FIGHTERS ⚔️
 
+### *The Ultimate Office Showdown*
 
-<h1 align="center">⚔️ RADAR FIGHTERS ⚔️</h1>
-<h3 align="center"><i>The Ultimate Office Showdown</i></h3>
-<p align="center"><b>24 warriors. Best of 3 rounds. Zero excuses.</b></p>
+![Herbert Kick](assets/spr_herbert_kick.png) ![Radarín Special](assets/spr_radarin_special.png) ![Chris Attack](assets/spr_chris_atk.png)
 
+**24 warriors. Best of 3 rounds. Zero excuses.**
 
-<p align="center">
-  <a href="https://christiangfv.github.io/street-brawler/"><img src="https://img.shields.io/badge/🎮_PLAY_NOW-Click_to_Fight-ff4444?style=for-the-badge&labelColor=222" alt="Play Now"></a>
-</p>
+### [🎮 PLAY NOW](https://christiangfv.github.io/street-brawler/)
 
-
-<p align="center">
-  <i>When deadlines get tight and Slack messages go unanswered...<br>There's only one way to settle it.</i>
-</p>
-
+*When deadlines get tight and Slack messages go unanswered... There's only one way to settle it.*
 
 ---
 
@@ -26,97 +16,55 @@
 
 ### 👑 FOUNDERS
 
-<p align="center">
-  <img src="assets/spr_herbert_special.png" height="120" title="HERBERT · CEO">
-  <img src="assets/spr_gabo_atk.png" height="120" title="GABO · CTO">
-  <img src="assets/spr_amanda_kick.png" height="120" title="AMANDA · CRO">
-</p>
+![Herbert](assets/spr_herbert_special.png) ![Gabo](assets/spr_gabo_atk.png) ![Amanda](assets/spr_amanda_kick.png)
 
-<p align="center"><b>HERBERT</b> · CEO · ⚔️9 💨6 🛡️6 · · · <b>GABO</b> · CTO · ⚔️8 💨8 🛡️5 · · · <b>AMANDA</b> · CRO · ⚔️8 💨8 🛡️5</p>
-
+**HERBERT** · CEO · ⚔️9 💨6 🛡️6 · · · **GABO** · CTO · ⚔️8 💨8 🛡️5 · · · **AMANDA** · CRO · ⚔️8 💨8 🛡️5
 
 ### 💻 ENGINEERING
 
-<p align="center">
-  <img src="assets/spr_arturo_special.png" height="100" title="ARTURO">
-  <img src="assets/spr_jaime_atk.png" height="100" title="JAIME">
-  <img src="assets/spr_chris_kick.png" height="100" title="CHRIS">
-  <img src="assets/spr_kevin_special.png" height="100" title="KEVIN">
-  <img src="assets/spr_lorens_atk.png" height="100" title="LORENS">
-</p>
+![Arturo](assets/spr_arturo_special.png) ![Jaime](assets/spr_jaime_atk.png) ![Chris](assets/spr_chris_kick.png) ![Kevin](assets/spr_kevin_special.png) ![Lorens](assets/spr_lorens_atk.png)
 
-<p align="center">
-  <img src="assets/spr_nelson_kick.png" height="100" title="NELSON">
-  <img src="assets/spr_andres_special.png" height="100" title="ANDRÉS">
-  <img src="assets/spr_javier_atk.png" height="100" title="JAVIER">
-  <img src="assets/spr_gerardo_kick.png" height="100" title="GERARDO">
-</p>
+![Nelson](assets/spr_nelson_kick.png) ![Andrés](assets/spr_andres_special.png) ![Javier](assets/spr_javier_atk.png) ![Gerardo](assets/spr_gerardo_kick.png)
 
-<p align="center"><b>ARTURO</b> · <b>JAIME</b> · <b>CHRIS</b> · <b>KEVIN</b> · <b>LORENS</b> · <b>NELSON</b> · <b>ANDRÉS</b> · <b>JAVIER</b> · <b>GERARDO</b></p>
-
+**ARTURO** · **JAIME** · **CHRIS** · **KEVIN** · **LORENS** · **NELSON** · **ANDRÉS** · **JAVIER** · **GERARDO**
 
 ### 📊 PRODUCT & BUSINESS
 
-<p align="center">
-  <img src="assets/spr_carlo_atk.png" height="110" title="CARLO">
-  <img src="assets/spr_esteban_kick.png" height="110" title="ESTEBAN">
-  <img src="assets/spr_francisco_special.png" height="110" title="FRANCISCO">
-</p>
+![Carlo](assets/spr_carlo_atk.png) ![Esteban](assets/spr_esteban_kick.png) ![Francisco](assets/spr_francisco_special.png)
 
-<p align="center"><b>CARLO</b> · Product Lead · · · <b>ESTEBAN</b> · Biz Dev · · · <b>FRANCISCO</b> · Analyst</p>
-
+**CARLO** · Product Lead · · · **ESTEBAN** · Biz Dev · · · **FRANCISCO** · Analyst
 
 ### 💰 SALES FORCE
 
-<p align="center">
-  <img src="assets/spr_hector_special.png" height="110" title="HÉCTOR">
-  <img src="assets/spr_alex_atk.png" height="110" title="ALEX">
-</p>
+![Héctor](assets/spr_hector_special.png) ![Alex](assets/spr_alex_atk.png)
 
-<p align="center"><b>HÉCTOR</b> · Sales Manager · · · <b>ALEX</b> · Sales Exec</p>
-
+**HÉCTOR** · Sales Manager · · · **ALEX** · Sales Exec
 
 ### ⚙️ OPS & SUPPORT
 
-<p align="center">
-  <img src="assets/spr_dani_kick.png" height="100" title="DANI">
-  <img src="assets/spr_yong_atk.png" height="100" title="YONG">
-  <img src="assets/spr_geri_special.png" height="100" title="GERI">
-  <img src="assets/spr_max_kick.png" height="100" title="MAX">
-</p>
+![Dani](assets/spr_dani_kick.png) ![Yong](assets/spr_yong_atk.png) ![Geri](assets/spr_geri_special.png) ![Max](assets/spr_max_kick.png)
 
-<p align="center"><b>DANI</b> · Ops · · · <b>YONG</b> · Ops Manager · · · <b>GERI</b> · Accounting · · · <b>MAX</b> · People & Culture</p>
-
+**DANI** · Ops · · · **YONG** · Ops Manager · · · **GERI** · Accounting · · · **MAX** · People & Culture
 
 ### 📣 MARKETING & COMMS
 
-<p align="center">
-  <img src="assets/spr_andy_special.png" height="110" title="ANDY">
-  <img src="assets/spr_karen_atk.png" height="110" title="KAREN">
-</p>
+![Andy](assets/spr_andy_special.png) ![Karen](assets/spr_karen_atk.png)
 
-<p align="center"><b>ANDY</b> · Marketing Lead · · · <b>KAREN</b> · Comms Analyst</p>
-
+**ANDY** · Marketing Lead · · · **KAREN** · Comms Analyst
 
 ### 🐬 SECRET BOSS
 
-<p align="center">
-  <img src="assets/spr_radarin_special.png" height="180">
-  <br><br>
-  <b>RADARÍN</b> · Chief Culture Officer · ⚔️10 💨10 🛡️10
-  <br>
-  <i>"He's not just the mascot. He's the FINAL BOSS."</i>
-</p>
+![Radarín](assets/spr_radarin_special.png)
 
+**RADARÍN** · Chief Culture Officer · ⚔️10 💨10 🛡️10
+
+*"He's not just the mascot. He's the FINAL BOSS."*
 
 ---
 
 ## 🕹️ CONTROLS
 
-<p align="center">
-  <img src="assets/spr_chris_special.png" height="120">
-</p>
-
+![Chris Special](assets/spr_chris_special.png)
 
 **Player 1** — `A` `D` move · `W` jump · `S` crouch/block · `U` `I` `O` punches · `J` `K` `L` kicks
 
@@ -128,11 +76,7 @@
 
 ## ⚡ MECHANICS
 
-<p align="center">
-  <img src="assets/spr_alex_kick.png" height="100">
-  <img src="assets/spr_amanda_special.png" height="100">
-</p>
-
+![Alex Kick](assets/spr_alex_kick.png) ![Amanda Special](assets/spr_amanda_special.png)
 
 - 🏆 **Best of 3** — Win 2 rounds to take the match
 - 👊 **6-Button Combat** — Light / Medium / Heavy punches & kicks
@@ -178,16 +122,10 @@ No `npm install`. No webpack. No bullshit.
 
 ---
 
-<p align="center">
-  <img src="assets/spr_herbert_atk.png" height="110">
-  <img src="assets/spr_radarin_atk.png" height="130">
-  <img src="assets/spr_gabo_kick.png" height="110">
-  <br><br>
-  <i>Pick your fighter. Enter the arena. Show no mercy.</i>
-  <br><br>
-  Made with 💪 and ☕ by the <a href="https://radar.cl">Radar</a> team
-  <br>
-  <b>© 2026 RADAR FIGHTERS</b> — <i>All rights reserved to kick ass</i>
-</p>
+![Herbert Attack](assets/spr_herbert_atk.png) ![Radarín Attack](assets/spr_radarin_atk.png) ![Gabo Kick](assets/spr_gabo_kick.png)
 
-]]>
+*Pick your fighter. Enter the arena. Show no mercy.*
+
+Made with 💪 and ☕ by the [Radar](https://radar.cl) team
+
+**© 2026 RADAR FIGHTERS** — *All rights reserved to kick ass*
