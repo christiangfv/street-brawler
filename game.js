@@ -208,13 +208,13 @@ function resumeAudio() {
 }
 
 function stopMusic() {
+  bgmPlaying = false; // Set BEFORE incrementing session to stop any in-flight scheduleNote
   musicSessionId++; // Invalidate all pending scheduleNote callbacks
   musicNodes.forEach(n => {
     try { n.stop(); } catch(e) {}
     try { n.disconnect(); } catch(e) {}
   });
   musicNodes = [];
-  bgmPlaying = false;
 }
 
 function playMenuMusic() {
@@ -233,7 +233,7 @@ function playMenuMusic() {
   ];
   const noteDur = 0.15;
   const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
   gain.connect(audioCtx.destination);
   musicNodes.push(gain);
 
@@ -270,7 +270,7 @@ function playVictoryMusic(onDone) {
   const fanfare = [523, 659, 784, 1047, 784, 1047, 1319, 1047, 1319];
   const noteDur = 0.14;
   const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
   gain.connect(audioCtx.destination);
   musicNodes.push(gain);
 
@@ -309,7 +309,7 @@ function playFightMusic() {
   ];
   const noteDur = 0.12;
   const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.025, audioCtx.currentTime);
   gain.connect(audioCtx.destination);
   musicNodes.push(gain);
 
@@ -347,7 +347,7 @@ function playSFX(type) {
     osc.type = 'square';
     osc.frequency.setValueAtTime(180, t);
     osc.frequency.exponentialRampToValueAtTime(80, t + 0.08);
-    gain.gain.setValueAtTime(0.3, t);
+    gain.gain.setValueAtTime(0.1, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
     osc.start(t); osc.stop(t + 0.1);
   } else if (type === 'special') {
@@ -355,21 +355,21 @@ function playSFX(type) {
     osc.frequency.setValueAtTime(440, t);
     osc.frequency.exponentialRampToValueAtTime(880, t + 0.05);
     osc.frequency.exponentialRampToValueAtTime(220, t + 0.2);
-    gain.gain.setValueAtTime(0.4, t);
+    gain.gain.setValueAtTime(0.12, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
     osc.start(t); osc.stop(t + 0.3);
   } else if (type === 'ko') {
     osc.type = 'square';
     osc.frequency.setValueAtTime(330, t);
     osc.frequency.exponentialRampToValueAtTime(55, t + 0.6);
-    gain.gain.setValueAtTime(0.5, t);
+    gain.gain.setValueAtTime(0.15, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
     osc.start(t); osc.stop(t + 0.7);
   } else if (type === 'select') {
     osc.type = 'square';
     osc.frequency.setValueAtTime(660, t);
     osc.frequency.setValueAtTime(880, t + 0.05);
-    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.setValueAtTime(0.07, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
     osc.start(t); osc.stop(t + 0.15);
   }
