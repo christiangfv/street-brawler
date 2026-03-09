@@ -4,17 +4,21 @@
   <img src="assets/spr_chris_atk.png" height="140">
 </p>
 
+
 <h1 align="center">⚔️ RADAR FIGHTERS ⚔️</h1>
 <h3 align="center"><i>The Ultimate Office Showdown</i></h3>
 <p align="center"><b>24 warriors. Best of 3 rounds. Zero excuses.</b></p>
+
 
 <p align="center">
   <a href="https://christiangfv.github.io/street-brawler/"><img src="https://img.shields.io/badge/🎮_PLAY_NOW-Click_to_Fight-ff4444?style=for-the-badge&labelColor=222" alt="Play Now"></a>
 </p>
 
+
 <p align="center">
   <i>When deadlines get tight and Slack messages go unanswered...<br>There's only one way to settle it.</i>
 </p>
+
 
 ---
 
@@ -27,7 +31,9 @@
   <img src="assets/spr_gabo_atk.png" height="120" title="GABO · CTO">
   <img src="assets/spr_amanda_kick.png" height="120" title="AMANDA · CRO">
 </p>
+
 <p align="center"><b>HERBERT</b> · CEO · ⚔️9 💨6 🛡️6 · · · <b>GABO</b> · CTO · ⚔️8 💨8 🛡️5 · · · <b>AMANDA</b> · CRO · ⚔️8 💨8 🛡️5</p>
+
 
 ### 💻 ENGINEERING
 
@@ -38,13 +44,16 @@
   <img src="assets/spr_kevin_special.png" height="100" title="KEVIN">
   <img src="assets/spr_lorens_atk.png" height="100" title="LORENS">
 </p>
+
 <p align="center">
   <img src="assets/spr_nelson_kick.png" height="100" title="NELSON">
   <img src="assets/spr_andres_special.png" height="100" title="ANDRÉS">
   <img src="assets/spr_javier_atk.png" height="100" title="JAVIER">
   <img src="assets/spr_gerardo_kick.png" height="100" title="GERARDO">
 </p>
+
 <p align="center"><b>ARTURO</b> · <b>JAIME</b> · <b>CHRIS</b> · <b>KEVIN</b> · <b>LORENS</b> · <b>NELSON</b> · <b>ANDRÉS</b> · <b>JAVIER</b> · <b>GERARDO</b></p>
+
 
 ### 📊 PRODUCT & BUSINESS
 
@@ -53,7 +62,9 @@
   <img src="assets/spr_esteban_kick.png" height="110" title="ESTEBAN">
   <img src="assets/spr_francisco_special.png" height="110" title="FRANCISCO">
 </p>
+
 <p align="center"><b>CARLO</b> · Product Lead · · · <b>ESTEBAN</b> · Biz Dev · · · <b>FRANCISCO</b> · Analyst</p>
+
 
 ### 💰 SALES FORCE
 
@@ -61,7 +72,9 @@
   <img src="assets/spr_hector_special.png" height="110" title="HÉCTOR">
   <img src="assets/spr_alex_atk.png" height="110" title="ALEX">
 </p>
+
 <p align="center"><b>HÉCTOR</b> · Sales Manager · · · <b>ALEX</b> · Sales Exec</p>
+
 
 ### ⚙️ OPS & SUPPORT
 
@@ -71,7 +84,9 @@
   <img src="assets/spr_geri_special.png" height="100" title="GERI">
   <img src="assets/spr_max_kick.png" height="100" title="MAX">
 </p>
+
 <p align="center"><b>DANI</b> · Ops · · · <b>YONG</b> · Ops Manager · · · <b>GERI</b> · Accounting · · · <b>MAX</b> · People & Culture</p>
+
 
 ### 📣 MARKETING & COMMS
 
@@ -79,7 +94,9 @@
   <img src="assets/spr_andy_special.png" height="110" title="ANDY">
   <img src="assets/spr_karen_atk.png" height="110" title="KAREN">
 </p>
+
 <p align="center"><b>ANDY</b> · Marketing Lead · · · <b>KAREN</b> · Comms Analyst</p>
+
 
 ### 🐬 SECRET BOSS
 
@@ -91,6 +108,7 @@
   <i>"He's not just the mascot. He's the FINAL BOSS."</i>
 </p>
 
+
 ---
 
 ## 🕹️ CONTROLS
@@ -98,6 +116,7 @@
 <p align="center">
   <img src="assets/spr_chris_special.png" height="120">
 </p>
+
 
 **Player 1** — `A` `D` move · `W` jump · `S` crouch/block · `U` `I` `O` punches · `J` `K` `L` kicks
 
@@ -113,6 +132,7 @@
   <img src="assets/spr_alex_kick.png" height="100">
   <img src="assets/spr_amanda_special.png" height="100">
 </p>
+
 
 - 🏆 **Best of 3** — Win 2 rounds to take the match
 - 👊 **6-Button Combat** — Light / Medium / Heavy punches & kicks
@@ -169,4 +189,5 @@ No `npm install`. No webpack. No bullshit.
   <br>
   <b>© 2026 RADAR FIGHTERS</b> — <i>All rights reserved to kick ass</i>
 </p>
+
 ]]>
