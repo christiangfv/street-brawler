@@ -36,13 +36,13 @@
 
 ### 💰 VENTAS
 
-![Héctor](assets/spr_hector_special.png) ![Alex](assets/spr_alex_kick.png) ![Esteban](assets/spr_esteban_kick.png)
+![Héctor](assets/spr_hector_special.png) ![Alex](assets/spr_alex_taunt.png) ![Esteban](assets/spr_esteban_kick.png)
 
 **HÉCTOR** · Gerente de Ventas · · · **ALEX** · Ejecutivo · · · **ESTEBAN** · Biz Dev
 
 ### ⚙️ OPS & SOPORTE
 
-![Dani](assets/spr_dani_kick.png) ![Yong](assets/spr_yong_atk.png) ![Geri](assets/spr_geri_special.png) ![Max](assets/spr_max_kick.png)
+![Dani](assets/spr_dani_taunt.png) ![Yong](assets/spr_yong_atk.png) ![Geri](assets/spr_geri_special.png) ![Max](assets/spr_max_kick.png)
 
 **DANI** · Operaciones · · · **YONG** · Gerente Ops · · · **GERI** · Contabilidad · · · **MAX** · People & Culture
 
