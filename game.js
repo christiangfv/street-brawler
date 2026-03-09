@@ -16,7 +16,7 @@ const ATTACK_DUR   = 18;
 const ATTACK_CD    = 28;
 const SPECIAL_CD   = 58;
 const HIT_STUN     = 22;
-const MAX_HP       = 100;
+const MAX_HP       = 150;
 const ROUND_TIME   = 90;
 const DOUBLE_TAP_MS = 350;
 
