@@ -188,7 +188,23 @@ function initAudio() {
 }
 
 function resumeAudio() {
-  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume().then(() => {
+      // If music wasn't playing because context was suspended, start it now
+      if (!bgmPlaying && currentScene) {
+        switch (currentScene) {
+          case SCENES.MENU:
+          case SCENES.CHARACTER_SELECT:
+            playMenuMusic();
+            break;
+          case SCENES.FIGHT:
+            playFightMusic();
+            break;
+          // GAME_OVER starts its own music in playVictoryMusic
+        }
+      }
+    });
+  }
 }
 
 function stopMusic() {
@@ -204,6 +220,8 @@ function stopMusic() {
 function playMenuMusic() {
   if (!audioCtx || bgmPlaying) return;
   resumeAudio();
+  // Don't start music if AudioContext is suspended (will be started on user gesture)
+  if (audioCtx.state === 'suspended') return;
   bgmPlaying = true;
   const mySession = musicSessionId; // Capture session at start
 
@@ -280,6 +298,8 @@ function playFightMusic() {
   stopMusic();
   if (!audioCtx) return;
   resumeAudio();
+  // Don't start music if AudioContext is suspended
+  if (audioCtx.state === 'suspended') return;
   bgmPlaying = true;
   const mySession = musicSessionId; // Capture session AFTER stopMusic incremented it
 
@@ -1506,6 +1526,51 @@ function buildFightScene(container) {
   hudLayer.addChild(atkReadyLeft);
   hudLayer.addChild(atkReadyRight);
 
+  // ── Best-of-3 round system (first to 2 wins) ──────────────
+  let p1Wins = 0;
+  let p2Wins = 0;
+  let currentRound = 1;
+  const WINS_NEEDED = 2;
+
+  // Round win indicators (2 circles per player, SF-style)
+  const roundIndicatorsP1 = new PIXI.Graphics();
+  const roundIndicatorsP2 = new PIXI.Graphics();
+  hudLayer.addChild(roundIndicatorsP1);
+  hudLayer.addChild(roundIndicatorsP2);
+
+  function drawRoundIndicators() {
+    roundIndicatorsP1.clear();
+    roundIndicatorsP2.clear();
+    const indicatorY = hudY + hudBarH + 24;
+    const indicatorR = 6;
+    const indicatorGap = 16;
+
+    // P1 round wins (left side)
+    for (let i = 0; i < WINS_NEEDED; i++) {
+      const x = hudPad + 20 + i * indicatorGap;
+      const won = i < p1Wins;
+      roundIndicatorsP1.circle(x, indicatorY, indicatorR)
+        .fill({ color: won ? 0xffcc00 : 0x333333, alpha: won ? 1 : 0.5 });
+      if (won) {
+        roundIndicatorsP1.circle(x, indicatorY, indicatorR)
+          .stroke({ color: 0xffff88, width: 2 });
+      }
+    }
+
+    // P2 round wins (right side)
+    for (let i = 0; i < WINS_NEEDED; i++) {
+      const x = W() - hudPad - 20 - i * indicatorGap;
+      const won = i < p2Wins;
+      roundIndicatorsP2.circle(x, indicatorY, indicatorR)
+        .fill({ color: won ? 0xffcc00 : 0x333333, alpha: won ? 1 : 0.5 });
+      if (won) {
+        roundIndicatorsP2.circle(x, indicatorY, indicatorR)
+          .stroke({ color: 0xffff88, width: 2 });
+      }
+    }
+  }
+  drawRoundIndicators();
+
   function updateHUD() {
     // HP bars
     const p1pct = Math.max(0, p1.hp / MAX_HP);
@@ -1568,9 +1633,9 @@ function buildFightScene(container) {
     app.ticker.add(ticker);
   }
 
-  // Show ROUND 1 → FIGHT!
+  // Show ROUND X → FIGHT!
   setTimeout(() => {
-    showIntroText('ROUND 1', 100, 0xffff00, () => {
+    showIntroText('ROUND ' + currentRound, 100, 0xffff00, () => {
       setTimeout(() => {
         showIntroText('FIGHT!', 80, 0xff4422, () => {
           roundOver = false;
@@ -1685,31 +1750,107 @@ function buildFightScene(container) {
     }
   }
 
+  // ── Reset fighters for new round ───────────────────────────
+  function resetFightersForNewRound() {
+    // Reset positions
+    p1.x = W() * 0.25;
+    p1.y = GROUND;
+    p1.vx = 0;
+    p1.vy = 0;
+    p1.hp = MAX_HP;
+    p1.state = 'idle';
+    p1.attackTimer = 0;
+    p1.attackCd = 0;
+    p1.hitStun = 0;
+    p1.blocking = false;
+    p1.dir = 1;
+    if (p1.container) {
+      p1.container.rotation = 0;
+      p1.container.x = p1.x;
+      p1.container.y = p1.y;
+    }
+
+    p2.x = W() * 0.75;
+    p2.y = GROUND;
+    p2.vx = 0;
+    p2.vy = 0;
+    p2.hp = MAX_HP;
+    p2.state = 'idle';
+    p2.attackTimer = 0;
+    p2.attackCd = 0;
+    p2.hitStun = 0;
+    p2.blocking = false;
+    p2.dir = -1;
+    p2.aiTimer = 0;
+    if (p2.container) {
+      p2.container.rotation = 0;
+      p2.container.x = p2.x;
+      p2.container.y = p2.y;
+    }
+
+    // Reset timer
+    roundTime = ROUND_TIME;
+    roundTimerAcc = 0;
+  }
+
   // ── Round end ────────────────────────────────────────────
   function endRound(winner) {
     if (roundOver) return;
     roundOver = true;
     stopMusic();
+
     // Set winner to win pose
     const winFighter = winner === 1 ? p1 : p2;
     winFighter.state = 'win';
 
-    const winText = winner === 1
-      ? char1def.name + ' WINS!'
-      : char2def.name + ' WINS!';
+    // Increment wins
+    if (winner === 1) p1Wins++;
+    else p2Wins++;
+
+    // Update round indicators
+    drawRoundIndicators();
+
+    const roundWinText = winner === 1
+      ? char1def.name + ' WINS ROUND ' + currentRound
+      : char2def.name + ' WINS ROUND ' + currentRound;
     const winColor = winner === 1 ? 0x4488ff : 0xff4444;
+
+    // Check if match is over (best of 3 = first to 2 wins)
+    const matchOver = p1Wins >= WINS_NEEDED || p2Wins >= WINS_NEEDED;
 
     setTimeout(() => {
       showIntroText('K.O.!', 80, 0xff2222, () => {
         setTimeout(() => {
-          showIntroText(winText, 120, winColor, () => {
-            setTimeout(() => {
-              document.removeEventListener('keydown', keydown);
-              document.removeEventListener('keyup', keyup);
-              gameResult = { winner, p1Name: char1def.name, p2Name: char2def.name };
-              showScene(SCENES.GAME_OVER);
-            }, 500);
-          });
+          if (matchOver) {
+            // Match is over — show final winner and go to GAME_OVER
+            const finalWinner = p1Wins >= WINS_NEEDED ? 1 : 2;
+            const finalWinText = (finalWinner === 1 ? char1def.name : char2def.name) + ' WINS!';
+            showIntroText(finalWinText, 120, winColor, () => {
+              setTimeout(() => {
+                document.removeEventListener('keydown', keydown);
+                document.removeEventListener('keyup', keyup);
+                gameResult = { winner: finalWinner, p1Name: char1def.name, p2Name: char2def.name, p1Wins, p2Wins };
+                showScene(SCENES.GAME_OVER);
+              }, 500);
+            });
+          } else {
+            // Round won, but match continues — show round win and start next round
+            showIntroText(roundWinText, 100, winColor, () => {
+              setTimeout(() => {
+                currentRound++;
+                resetFightersForNewRound();
+                drawRoundIndicators();
+                playFightMusic();
+                showIntroText('ROUND ' + currentRound, 100, 0xffff00, () => {
+                  setTimeout(() => {
+                    showIntroText('FIGHT!', 80, 0xff4422, () => {
+                      roundOver = false;
+                    });
+                  }, 200);
+                });
+              }, 400);
+            });
+          }
         }, 300);
       });
     }, 500);
