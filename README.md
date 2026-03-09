@@ -5,9 +5,7 @@
 </p>
 
 <h1 align="center">⚔️ RADAR FIGHTERS ⚔️</h1>
-
 <h3 align="center"><i>The Ultimate Office Showdown</i></h3>
-
 <p align="center"><b>24 warriors. Best of 3 rounds. Zero excuses.</b></p>
 
 <p align="center">
@@ -15,12 +13,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/FIGHTING-red?style=flat-square" alt="Genre">
-  <img src="https://img.shields.io/badge/1P_or_2P-blue?style=flat-square" alt="Players">
-  <img src="https://img.shields.io/badge/ZERO_DEPS-brightgreen?style=flat-square" alt="Zero Deps">
+  <i>When deadlines get tight and Slack messages go unanswered...<br>There's only one way to settle it.</i>
 </p>
-
-<p align="center"><i>When deadlines get tight and Slack messages go unanswered...<br>There's only one way to settle it.</i></p>
 
 ---
 
@@ -29,105 +23,69 @@
 ### 👑 FOUNDERS
 
 <p align="center">
-  <img src="assets/spr_herbert_special.png" height="110">
-  <img src="assets/spr_gabo_atk.png" height="110">
-  <img src="assets/spr_amanda_kick.png" height="110">
+  <img src="assets/spr_herbert_special.png" height="120" title="HERBERT · CEO">
+  <img src="assets/spr_gabo_atk.png" height="120" title="GABO · CTO">
+  <img src="assets/spr_amanda_kick.png" height="120" title="AMANDA · CRO">
 </p>
-
-| Fighter | Role | ⚔️ ATK | 💨 SPD | 🛡️ DEF |
-|---------|------|--------|--------|---------|
-| **HERBERT** | CEO | 9 | 6 | 6 |
-| **GABO** | CTO | 8 | 8 | 5 |
-| **AMANDA** | CRO | 8 | 8 | 5 |
+<p align="center"><b>HERBERT</b> · CEO · ⚔️9 💨6 🛡️6 · · · <b>GABO</b> · CTO · ⚔️8 💨8 🛡️5 · · · <b>AMANDA</b> · CRO · ⚔️8 💨8 🛡️5</p>
 
 ### 💻 ENGINEERING
 
 <p align="center">
-  <img src="assets/spr_arturo_special.png" height="100">
-  <img src="assets/spr_jaime_atk.png" height="100">
-  <img src="assets/spr_chris_kick.png" height="100">
-  <img src="assets/spr_kevin_special.png" height="100">
-  <img src="assets/spr_lorens_atk.png" height="100">
+  <img src="assets/spr_arturo_special.png" height="100" title="ARTURO">
+  <img src="assets/spr_jaime_atk.png" height="100" title="JAIME">
+  <img src="assets/spr_chris_kick.png" height="100" title="CHRIS">
+  <img src="assets/spr_kevin_special.png" height="100" title="KEVIN">
+  <img src="assets/spr_lorens_atk.png" height="100" title="LORENS">
 </p>
-
 <p align="center">
-  <img src="assets/spr_nelson_kick.png" height="100">
-  <img src="assets/spr_andres_special.png" height="100">
-  <img src="assets/spr_javier_atk.png" height="100">
-  <img src="assets/spr_gerardo_kick.png" height="100">
+  <img src="assets/spr_nelson_kick.png" height="100" title="NELSON">
+  <img src="assets/spr_andres_special.png" height="100" title="ANDRÉS">
+  <img src="assets/spr_javier_atk.png" height="100" title="JAVIER">
+  <img src="assets/spr_gerardo_kick.png" height="100" title="GERARDO">
 </p>
-
-| Fighter | Role | ⚔️ | 💨 | 🛡️ |
-|---------|------|----|----|-----|
-| **ARTURO** | Tech Manager | 6 | 9 | 6 |
-| **JAIME** | Tech Lead | 7 | 8 | 6 |
-| **CHRIS** | Backend | 6 | 9 | 6 |
-| **KEVIN** | Full Stack | 7 | 8 | 6 |
-| **LORENS** | Backend | 6 | 9 | 6 |
-| **NELSON** | Backend | 7 | 8 | 6 |
-| **ANDRÉS** | DevOps | 6 | 7 | 8 |
-| **JAVIER** | Frontend | 6 | 9 | 5 |
-| **GERARDO** | Low Code | 6 | 7 | 7 |
+<p align="center"><b>ARTURO</b> · <b>JAIME</b> · <b>CHRIS</b> · <b>KEVIN</b> · <b>LORENS</b> · <b>NELSON</b> · <b>ANDRÉS</b> · <b>JAVIER</b> · <b>GERARDO</b></p>
 
 ### 📊 PRODUCT & BUSINESS
 
 <p align="center">
-  <img src="assets/spr_carlo_atk.png" height="100">
-  <img src="assets/spr_esteban_kick.png" height="100">
-  <img src="assets/spr_francisco_special.png" height="100">
+  <img src="assets/spr_carlo_atk.png" height="110" title="CARLO">
+  <img src="assets/spr_esteban_kick.png" height="110" title="ESTEBAN">
+  <img src="assets/spr_francisco_special.png" height="110" title="FRANCISCO">
 </p>
-
-| Fighter | Role | ⚔️ | 💨 | 🛡️ |
-|---------|------|----|----|-----|
-| **CARLO** | Product Lead | 8 | 7 | 6 |
-| **ESTEBAN** | Biz Dev | 8 | 8 | 5 |
-| **FRANCISCO** | Analyst | 7 | 7 | 7 |
+<p align="center"><b>CARLO</b> · Product Lead · · · <b>ESTEBAN</b> · Biz Dev · · · <b>FRANCISCO</b> · Analyst</p>
 
 ### 💰 SALES FORCE
 
 <p align="center">
-  <img src="assets/spr_hector_special.png" height="100">
-  <img src="assets/spr_alex_atk.png" height="100">
+  <img src="assets/spr_hector_special.png" height="110" title="HÉCTOR">
+  <img src="assets/spr_alex_atk.png" height="110" title="ALEX">
 </p>
-
-| Fighter | Role | ⚔️ | 💨 | 🛡️ |
-|---------|------|----|----|-----|
-| **HÉCTOR** | Sales Manager | 8 | 7 | 6 |
-| **ALEX** | Sales Exec | 9 | 8 | 4 |
+<p align="center"><b>HÉCTOR</b> · Sales Manager · · · <b>ALEX</b> · Sales Exec</p>
 
 ### ⚙️ OPS & SUPPORT
 
 <p align="center">
-  <img src="assets/spr_dani_kick.png" height="100">
-  <img src="assets/spr_yong_atk.png" height="100">
-  <img src="assets/spr_geri_special.png" height="100">
-  <img src="assets/spr_max_kick.png" height="100">
+  <img src="assets/spr_dani_kick.png" height="100" title="DANI">
+  <img src="assets/spr_yong_atk.png" height="100" title="YONG">
+  <img src="assets/spr_geri_special.png" height="100" title="GERI">
+  <img src="assets/spr_max_kick.png" height="100" title="MAX">
 </p>
-
-| Fighter | Role | ⚔️ | 💨 | 🛡️ |
-|---------|------|----|----|-----|
-| **DANI** | Operations | 5 | 7 | 8 |
-| **YONG** | Ops Manager | 6 | 7 | 8 |
-| **GERI** | Accounting | 5 | 6 | 9 |
-| **MAX** | People & Culture | 7 | 7 | 7 |
+<p align="center"><b>DANI</b> · Ops · · · <b>YONG</b> · Ops Manager · · · <b>GERI</b> · Accounting · · · <b>MAX</b> · People & Culture</p>
 
 ### 📣 MARKETING & COMMS
 
 <p align="center">
-  <img src="assets/spr_andy_special.png" height="100">
-  <img src="assets/spr_karen_atk.png" height="100">
+  <img src="assets/spr_andy_special.png" height="110" title="ANDY">
+  <img src="assets/spr_karen_atk.png" height="110" title="KAREN">
 </p>
-
-| Fighter | Role | ⚔️ | 💨 | 🛡️ |
-|---------|------|----|----|-----|
-| **ANDY** | Marketing Lead | 8 | 8 | 5 |
-| **KAREN** | Comms Analyst | 6 | 8 | 6 |
+<p align="center"><b>ANDY</b> · Marketing Lead · · · <b>KAREN</b> · Comms Analyst</p>
 
 ### 🐬 SECRET BOSS
 
 <p align="center">
   <img src="assets/spr_radarin_special.png" height="180">
-  <br>
+  <br><br>
   <b>RADARÍN</b> · Chief Culture Officer · ⚔️10 💨10 🛡️10
   <br>
   <i>"He's not just the mascot. He's the FINAL BOSS."</i>
@@ -141,29 +99,11 @@
   <img src="assets/spr_chris_special.png" height="120">
 </p>
 
-### Player 1 (Keyboard)
+**Player 1** — `A` `D` move · `W` jump · `S` crouch/block · `U` `I` `O` punches · `J` `K` `L` kicks
 
-| Action | Key |
-|--------|-----|
-| Move | `A` / `D` |
-| Jump | `W` |
-| Crouch / Block | `S` |
-| Punches | `U` `I` `O` |
-| Kicks | `J` `K` `L` |
+**Player 2** — `←` `→` move · `↑` jump · `↓` crouch/block · `Num 4` `5` `6` punches · `Num 1` `2` `3` kicks
 
-### Player 2 (Arrows + Numpad)
-
-| Action | Key |
-|--------|-----|
-| Move | `←` `→` |
-| Jump | `↑` |
-| Crouch / Block | `↓` |
-| Punches | `Num 4` `5` `6` |
-| Kicks | `Num 1` `2` `3` |
-
-### 📱 Mobile
-
-Full touch controls — D-Pad + 6-button layout. Portrait and landscape.
+**📱 Mobile** — D-Pad + 6-button layout. Portrait and landscape.
 
 ---
 
@@ -174,14 +114,12 @@ Full touch controls — D-Pad + 6-button layout. Portrait and landscape.
   <img src="assets/spr_amanda_special.png" height="100">
 </p>
 
-| Mechanic | Description |
-|----------|-------------|
-| 🏆 **Best of 3** | Win 2 rounds to take the match |
-| 👊 **6-Button Combat** | Light / Medium / Heavy — Punches & Kicks |
-| 🛡️ **Blocking** | Crouch to reduce incoming damage |
-| ⚡ **Specials** | Heavy attacks with extra range and damage |
-| ⏱️ **90s Rounds** | Time runs out? Highest HP wins |
-| 💥 **Hit Effects** | Particles, screen shake, satisfying feedback |
+- 🏆 **Best of 3** — Win 2 rounds to take the match
+- 👊 **6-Button Combat** — Light / Medium / Heavy punches & kicks
+- 🛡️ **Blocking** — Crouch to reduce incoming damage
+- ⚡ **Specials** — Heavy attacks with extra range and damage
+- ⏱️ **90s Rounds** — Time runs out? Highest HP wins
+- 💥 **Hit Effects** — Particles, screen shake, satisfying feedback
 
 ---
 
@@ -213,12 +151,10 @@ No `npm install`. No webpack. No bullshit.
 
 ## 🛠️ STACK
 
-| Tech | Purpose |
-|------|---------|
-| **PixiJS 8** | WebGL/Canvas rendering |
-| **Web Audio API** | Chiptune music generation |
-| **Vanilla JS** | Game logic (~2300 lines) |
-| **HTML5 + CSS3** | Zero framework |
+- **PixiJS 8** — WebGL/Canvas rendering
+- **Web Audio API** — Chiptune music generation
+- **Vanilla JS** — Game logic (~2300 lines)
+- **HTML5 + CSS3** — Zero framework
 
 ---
 
