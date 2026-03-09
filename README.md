@@ -24,21 +24,21 @@
 
 ![Arturo](assets/spr_arturo_special.png) ![Jaime](assets/spr_jaime_atk.png) ![Chris](assets/spr_chris_kick.png) ![Kevin](assets/spr_kevin_special.png) ![Lorens](assets/spr_lorens_atk.png)
 
-![Nelson](assets/spr_nelson_kick.png) ![Andrés](assets/spr_andres_special.png) ![Javier](assets/spr_javier_atk.png) ![Gerardo](assets/spr_gerardo_special.png)
+![Nelson](assets/spr_nelson_kick.png) ![Andrés](assets/spr_andres_special.png) ![Javier](assets/spr_javier_atk.png)
 
-**ARTURO** · **JAIME** · **CHRIS** · **KEVIN** · **LORENS** · **NELSON** · **ANDRÉS** · **JAVIER** · **GERARDO**
+**ARTURO** · **JAIME** · **CHRIS** · **KEVIN** · **LORENS** · **NELSON** · **ANDRÉS** · **JAVIER**
 
 ### 📊 PRODUCT & BUSINESS
 
-![Carlo](assets/spr_carlo_atk.png) ![Esteban](assets/spr_esteban_kick.png) ![Francisco](assets/spr_francisco_special.png)
+![Carlo](assets/spr_carlo_atk.png) ![Gerardo](assets/spr_gerardo_special.png) ![Francisco](assets/spr_francisco_special.png)
 
-**CARLO** · Product Lead · · · **ESTEBAN** · Biz Dev · · · **FRANCISCO** · Analyst
+**CARLO** · Product Lead · · · **GERARDO** · Low Code · · · **FRANCISCO** · Analyst
 
 ### 💰 SALES FORCE
 
-![Héctor](assets/spr_hector_special.png) ![Alex](assets/spr_alex_atk.png)
+![Héctor](assets/spr_hector_special.png) ![Alex](assets/spr_alex_atk.png) ![Esteban](assets/spr_esteban_kick.png)
 
-**HÉCTOR** · Sales Manager · · · **ALEX** · Sales Exec
+**HÉCTOR** · Sales Manager · · · **ALEX** · Sales Exec · · · **ESTEBAN** · Biz Dev
 
 ### ⚙️ OPS & SUPPORT
 
