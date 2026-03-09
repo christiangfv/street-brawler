@@ -1,144 +1,147 @@
-<![CDATA[<div align="center">
+<![CDATA[<p align="center">
+  <img src="assets/spr_herbert_kick.png" height="140">
+  <img src="assets/spr_radarin_special.png" height="160">
+  <img src="assets/spr_chris_atk.png" height="140">
+</p>
 
-# ⚔️ RADAR FIGHTERS ⚔️
+<h1 align="center">⚔️ RADAR FIGHTERS ⚔️</h1>
 
-### *The Ultimate Office Showdown*
+<h3 align="center"><i>The Ultimate Office Showdown</i></h3>
 
-<br>
+<p align="center"><b>24 warriors. Best of 3 rounds. Zero excuses.</b></p>
 
-<img src="assets/spr_herbert_kick.png" height="140">&nbsp;&nbsp;&nbsp;
-<img src="assets/spr_radarin_special.png" height="160">&nbsp;&nbsp;&nbsp;
-<img src="assets/spr_chris_atk.png" height="140">
+<p align="center">
+  <a href="https://christiangfv.github.io/street-brawler/"><img src="https://img.shields.io/badge/🎮_PLAY_NOW-Click_to_Fight-ff4444?style=for-the-badge&labelColor=222" alt="Play Now"></a>
+</p>
 
-<br><br>
+<p align="center">
+  <img src="https://img.shields.io/badge/FIGHTING-red?style=flat-square" alt="Genre">
+  <img src="https://img.shields.io/badge/1P_or_2P-blue?style=flat-square" alt="Players">
+  <img src="https://img.shields.io/badge/ZERO_DEPS-brightgreen?style=flat-square" alt="Zero Deps">
+</p>
 
-**24 warriors. Best of 3 rounds. Zero excuses.**
-
-<br>
-
-[![Play Now](https://img.shields.io/badge/🎮_PLAY_NOW-Click_to_Fight-ff4444?style=for-the-badge&labelColor=222)](https://christiangfv.github.io/street-brawler/)
-[![Genre](https://img.shields.io/badge/FIGHTING-red?style=flat-square)](.)
-[![Players](https://img.shields.io/badge/1P_or_2P-blue?style=flat-square)](.)
-[![Zero Deps](https://img.shields.io/badge/ZERO_DEPS-brightgreen?style=flat-square)](.)
-
----
-
-*When deadlines get tight and Slack messages go unanswered...*
-*There's only one way to settle it.*
-
-</div>
+<p align="center"><i>When deadlines get tight and Slack messages go unanswered...<br>There's only one way to settle it.</i></p>
 
 ---
 
 ## 🎮 THE ROSTER
 
-<div align="center">
-
 ### 👑 FOUNDERS
 
-<img src="assets/spr_herbert_special.png" height="110">&nbsp;&nbsp;
-<img src="assets/spr_gabo_atk.png" height="110">&nbsp;&nbsp;
-<img src="assets/spr_amanda_kick.png" height="110">
+<p align="center">
+  <img src="assets/spr_herbert_special.png" height="110">
+  <img src="assets/spr_gabo_atk.png" height="110">
+  <img src="assets/spr_amanda_kick.png" height="110">
+</p>
 
-**HERBERT** · CEO · ⚔️9 💨6 🛡️6 &nbsp;&nbsp;|&nbsp;&nbsp;
-**GABO** · CTO · ⚔️8 💨8 🛡️5 &nbsp;&nbsp;|&nbsp;&nbsp;
-**AMANDA** · CRO · ⚔️8 💨8 🛡️5
-
----
+| Fighter | Role | ⚔️ ATK | 💨 SPD | 🛡️ DEF |
+|---------|------|--------|--------|---------|
+| **HERBERT** | CEO | 9 | 6 | 6 |
+| **GABO** | CTO | 8 | 8 | 5 |
+| **AMANDA** | CRO | 8 | 8 | 5 |
 
 ### 💻 ENGINEERING
 
-<img src="assets/spr_arturo_special.png" height="100">&nbsp;
-<img src="assets/spr_jaime_atk.png" height="100">&nbsp;
-<img src="assets/spr_chris_kick.png" height="100">&nbsp;
-<img src="assets/spr_kevin_special.png" height="100">&nbsp;
-<img src="assets/spr_lorens_atk.png" height="100">
+<p align="center">
+  <img src="assets/spr_arturo_special.png" height="100">
+  <img src="assets/spr_jaime_atk.png" height="100">
+  <img src="assets/spr_chris_kick.png" height="100">
+  <img src="assets/spr_kevin_special.png" height="100">
+  <img src="assets/spr_lorens_atk.png" height="100">
+</p>
 
-**ARTURO** · Tech Manager &nbsp;|&nbsp;
-**JAIME** · Tech Lead &nbsp;|&nbsp;
-**CHRIS** · Backend &nbsp;|&nbsp;
-**KEVIN** · Full Stack &nbsp;|&nbsp;
-**LORENS** · Backend
+<p align="center">
+  <img src="assets/spr_nelson_kick.png" height="100">
+  <img src="assets/spr_andres_special.png" height="100">
+  <img src="assets/spr_javier_atk.png" height="100">
+  <img src="assets/spr_gerardo_kick.png" height="100">
+</p>
 
-<img src="assets/spr_nelson_kick.png" height="100">&nbsp;
-<img src="assets/spr_andres_special.png" height="100">&nbsp;
-<img src="assets/spr_javier_atk.png" height="100">&nbsp;
-<img src="assets/spr_gerardo_kick.png" height="100">
-
-**NELSON** · Backend &nbsp;|&nbsp;
-**ANDRÉS** · DevOps &nbsp;|&nbsp;
-**JAVIER** · Frontend &nbsp;|&nbsp;
-**GERARDO** · Low Code
-
----
+| Fighter | Role | ⚔️ | 💨 | 🛡️ |
+|---------|------|----|----|-----|
+| **ARTURO** | Tech Manager | 6 | 9 | 6 |
+| **JAIME** | Tech Lead | 7 | 8 | 6 |
+| **CHRIS** | Backend | 6 | 9 | 6 |
+| **KEVIN** | Full Stack | 7 | 8 | 6 |
+| **LORENS** | Backend | 6 | 9 | 6 |
+| **NELSON** | Backend | 7 | 8 | 6 |
+| **ANDRÉS** | DevOps | 6 | 7 | 8 |
+| **JAVIER** | Frontend | 6 | 9 | 5 |
+| **GERARDO** | Low Code | 6 | 7 | 7 |
 
 ### 📊 PRODUCT & BUSINESS
 
-<img src="assets/spr_carlo_atk.png" height="100">&nbsp;&nbsp;
-<img src="assets/spr_esteban_kick.png" height="100">&nbsp;&nbsp;
-<img src="assets/spr_francisco_special.png" height="100">
+<p align="center">
+  <img src="assets/spr_carlo_atk.png" height="100">
+  <img src="assets/spr_esteban_kick.png" height="100">
+  <img src="assets/spr_francisco_special.png" height="100">
+</p>
 
-**CARLO** · Product Lead &nbsp;|&nbsp;
-**ESTEBAN** · Biz Dev &nbsp;|&nbsp;
-**FRANCISCO** · Analyst
-
----
+| Fighter | Role | ⚔️ | 💨 | 🛡️ |
+|---------|------|----|----|-----|
+| **CARLO** | Product Lead | 8 | 7 | 6 |
+| **ESTEBAN** | Biz Dev | 8 | 8 | 5 |
+| **FRANCISCO** | Analyst | 7 | 7 | 7 |
 
 ### 💰 SALES FORCE
 
-<img src="assets/spr_hector_special.png" height="100">&nbsp;&nbsp;
-<img src="assets/spr_alex_atk.png" height="100">
+<p align="center">
+  <img src="assets/spr_hector_special.png" height="100">
+  <img src="assets/spr_alex_atk.png" height="100">
+</p>
 
-**HÉCTOR** · Sales Manager &nbsp;|&nbsp;
-**ALEX** · Sales Exec
-
----
+| Fighter | Role | ⚔️ | 💨 | 🛡️ |
+|---------|------|----|----|-----|
+| **HÉCTOR** | Sales Manager | 8 | 7 | 6 |
+| **ALEX** | Sales Exec | 9 | 8 | 4 |
 
 ### ⚙️ OPS & SUPPORT
 
-<img src="assets/spr_dani_kick.png" height="100">&nbsp;
-<img src="assets/spr_yong_atk.png" height="100">&nbsp;
-<img src="assets/spr_geri_special.png" height="100">&nbsp;
-<img src="assets/spr_max_kick.png" height="100">
+<p align="center">
+  <img src="assets/spr_dani_kick.png" height="100">
+  <img src="assets/spr_yong_atk.png" height="100">
+  <img src="assets/spr_geri_special.png" height="100">
+  <img src="assets/spr_max_kick.png" height="100">
+</p>
 
-**DANI** · Operations &nbsp;|&nbsp;
-**YONG** · Ops Manager &nbsp;|&nbsp;
-**GERI** · Accounting &nbsp;|&nbsp;
-**MAX** · People & Culture
-
----
+| Fighter | Role | ⚔️ | 💨 | 🛡️ |
+|---------|------|----|----|-----|
+| **DANI** | Operations | 5 | 7 | 8 |
+| **YONG** | Ops Manager | 6 | 7 | 8 |
+| **GERI** | Accounting | 5 | 6 | 9 |
+| **MAX** | People & Culture | 7 | 7 | 7 |
 
 ### 📣 MARKETING & COMMS
 
-<img src="assets/spr_andy_special.png" height="100">&nbsp;&nbsp;
-<img src="assets/spr_karen_atk.png" height="100">
+<p align="center">
+  <img src="assets/spr_andy_special.png" height="100">
+  <img src="assets/spr_karen_atk.png" height="100">
+</p>
 
-**ANDY** · Marketing Lead &nbsp;|&nbsp;
-**KAREN** · Comms Analyst
-
----
+| Fighter | Role | ⚔️ | 💨 | 🛡️ |
+|---------|------|----|----|-----|
+| **ANDY** | Marketing Lead | 8 | 8 | 5 |
+| **KAREN** | Comms Analyst | 6 | 8 | 6 |
 
 ### 🐬 SECRET BOSS
 
-<img src="assets/spr_radarin_special.png" height="180">
-
-**RADARÍN** · Chief Culture Officer · ⚔️10 💨10 🛡️10
-
-*"He's not just the mascot. He's the FINAL BOSS."*
-
-</div>
+<p align="center">
+  <img src="assets/spr_radarin_special.png" height="180">
+  <br>
+  <b>RADARÍN</b> · Chief Culture Officer · ⚔️10 💨10 🛡️10
+  <br>
+  <i>"He's not just the mascot. He's the FINAL BOSS."</i>
+</p>
 
 ---
 
 ## 🕹️ CONTROLS
 
-<div align="center">
+<p align="center">
+  <img src="assets/spr_chris_special.png" height="120">
+</p>
 
-<img src="assets/spr_chris_special.png" height="120" align="right">
-
-</div>
-
-### 🔵 Player 1
+### Player 1 (Keyboard)
 
 | Action | Key |
 |--------|-----|
@@ -148,7 +151,7 @@
 | Punches | `U` `I` `O` |
 | Kicks | `J` `K` `L` |
 
-### 🔴 Player 2
+### Player 2 (Arrows + Numpad)
 
 | Action | Key |
 |--------|-----|
@@ -160,26 +163,24 @@
 
 ### 📱 Mobile
 
-Full touch controls — D-Pad + 6-button layout. Works in portrait and landscape.
+Full touch controls — D-Pad + 6-button layout. Portrait and landscape.
 
 ---
 
 ## ⚡ MECHANICS
 
-<div align="center">
+<p align="center">
+  <img src="assets/spr_alex_kick.png" height="100">
+  <img src="assets/spr_amanda_special.png" height="100">
+</p>
 
-<img src="assets/spr_alex_kick.png" height="100">&nbsp;&nbsp;&nbsp;
-<img src="assets/spr_amanda_special.png" height="100">
-
-</div>
-
-| | |
-|---|---|
+| Mechanic | Description |
+|----------|-------------|
 | 🏆 **Best of 3** | Win 2 rounds to take the match |
 | 👊 **6-Button Combat** | Light / Medium / Heavy — Punches & Kicks |
 | 🛡️ **Blocking** | Crouch to reduce incoming damage |
 | ⚡ **Specials** | Heavy attacks with extra range and damage |
-| ⏱️ **90-Second Rounds** | Time runs out? Highest HP wins |
+| ⏱️ **90s Rounds** | Time runs out? Highest HP wins |
 | 💥 **Hit Effects** | Particles, screen shake, satisfying feedback |
 
 ---
@@ -197,11 +198,9 @@ Full touch controls — D-Pad + 6-button layout. Works in portrait and landscape
 
 ## 🚀 PLAY
 
-### Online
-👉 **[christiangfv.github.io/street-brawler](https://christiangfv.github.io/street-brawler/)**
+**Online:** [christiangfv.github.io/street-brawler](https://christiangfv.github.io/street-brawler/)
 
-### Local
-
+**Local:**
 ```bash
 git clone https://github.com/christiangfv/street-brawler.git
 cd street-brawler
@@ -214,8 +213,8 @@ No `npm install`. No webpack. No bullshit.
 
 ## 🛠️ STACK
 
-| | |
-|---|---|
+| Tech | Purpose |
+|------|---------|
 | **PixiJS 8** | WebGL/Canvas rendering |
 | **Web Audio API** | Chiptune music generation |
 | **Vanilla JS** | Game logic (~2300 lines) |
@@ -223,21 +222,15 @@ No `npm install`. No webpack. No bullshit.
 
 ---
 
-<div align="center">
-
-<img src="assets/spr_herbert_atk.png" height="110">&nbsp;
-<img src="assets/spr_radarin_atk.png" height="130">&nbsp;
-<img src="assets/spr_gabo_kick.png" height="110">
-
-<br><br>
-
-*Pick your fighter. Enter the arena. Show no mercy.*
-
-<br>
-
-Made with 💪 and ☕ by the [Radar](https://radar.cl) team
-
-**© 2026 RADAR FIGHTERS** — *All rights reserved to kick ass*
-
-</div>
+<p align="center">
+  <img src="assets/spr_herbert_atk.png" height="110">
+  <img src="assets/spr_radarin_atk.png" height="130">
+  <img src="assets/spr_gabo_kick.png" height="110">
+  <br><br>
+  <i>Pick your fighter. Enter the arena. Show no mercy.</i>
+  <br><br>
+  Made with 💪 and ☕ by the <a href="https://radar.cl">Radar</a> team
+  <br>
+  <b>© 2026 RADAR FIGHTERS</b> — <i>All rights reserved to kick ass</i>
+</p>
 ]]>
