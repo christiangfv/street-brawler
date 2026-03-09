@@ -16,39 +16,39 @@
 
 ### 👑 FUNDADORES
 
-![Herbert](assets/spr_herbert_special.png) ![Gabo](assets/spr_gabo_atk.png) ![Amanda](assets/spr_amanda_special.png)
+![Herbert](assets/spr_herbert_special.png) ![Gabo](assets/spr_gabo_taunt.png) ![Amanda](assets/spr_amanda_special.png)
 
 **HERBERT** · CEO · ⚔️9 💨6 🛡️6 · · · **GABO** · CTO · ⚔️8 💨8 🛡️5 · · · **AMANDA** · CRO · ⚔️8 💨8 🛡️5
 
 ### 💻 INGENIERÍA
 
-![Arturo](assets/spr_arturo_special.png) ![Jaime](assets/spr_jaime_atk.png) ![Chris](assets/spr_chris_kick.png) ![Kevin](assets/spr_kevin_special.png) ![Lorens](assets/spr_lorens_atk.png)
+![Arturo](assets/spr_arturo_special.png) ![Jaime](assets/spr_jaime_taunt.png) ![Chris](assets/spr_chris_kick.png) ![Kevin](assets/spr_kevin_taunt.png) ![Lorens](assets/spr_lorens_atk.png)
 
-![Nelson](assets/spr_nelson_kick.png) ![Andrés](assets/spr_andres_special.png) ![Javier](assets/spr_javier_atk.png)
+![Nelson](assets/spr_nelson_taunt.png) ![Andrés](assets/spr_andres_special.png) ![Javier](assets/spr_javier_atk.png)
 
 **ARTURO** · **JAIME** · **CHRIS** · **KEVIN** · **LORENS** · **NELSON** · **ANDRÉS** · **JAVIER**
 
 ### 📊 PRODUCTO & NEGOCIO
 
-![Carlo](assets/spr_carlo_atk.png) ![Gerardo](assets/spr_gerardo_special.png) ![Francisco](assets/spr_francisco_special.png)
+![Carlo](assets/spr_carlo_taunt.png) ![Gerardo](assets/spr_gerardo_special.png) ![Francisco](assets/spr_francisco_special.png)
 
 **CARLO** · Líder de Producto · · · **GERARDO** · Low Code · · · **FRANCISCO** · Analista
 
 ### 💰 VENTAS
 
-![Héctor](assets/spr_hector_special.png) ![Alex](assets/spr_alex_taunt.png) ![Esteban](assets/spr_esteban_kick.png)
+![Héctor](assets/spr_hector_taunt.png) ![Alex](assets/spr_alex_taunt.png) ![Esteban](assets/spr_esteban_kick.png)
 
 **HÉCTOR** · Gerente de Ventas · · · **ALEX** · Ejecutivo · · · **ESTEBAN** · Biz Dev
 
 ### ⚙️ OPS & SOPORTE
 
-![Dani](assets/spr_dani_taunt.png) ![Yong](assets/spr_yong_atk.png) ![Geri](assets/spr_geri_special.png) ![Max](assets/spr_max_kick.png)
+![Dani](assets/spr_dani_taunt.png) ![Yong](assets/spr_yong_taunt.png) ![Geri](assets/spr_geri_special.png) ![Max](assets/spr_max_taunt.png)
 
 **DANI** · Operaciones · · · **YONG** · Gerente Ops · · · **GERI** · Contabilidad · · · **MAX** · People & Culture
 
 ### 📣 MARKETING & COMUNICACIONES
 
-![Andy](assets/spr_andy_special.png) ![Karen](assets/spr_karen_atk.png)
+![Andy](assets/spr_andy_taunt.png) ![Karen](assets/spr_karen_atk.png)
 
 **ANDY** · Líder de Marketing · · · **KAREN** · Analista de Comunicaciones
 
