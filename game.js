@@ -1744,21 +1744,28 @@ function buildFightScene(container) {
     const verticalDist = Math.abs(attacker.y - defender.y);
     const attackRangeY = isHeavy ? ATTACK_RANGE_Y * 2 : ATTACK_RANGE_Y;
     if (dist < atk.range && verticalDist < attackRangeY && defender.state !== 'ko') {
-      const blockMult = defender.blocking ? 0.25 : 1.0; // Block reduces damage 75%
+      const isBlocked = defender.blocking;
+      const blockMult = isBlocked ? 0.25 : 1.0; // Block reduces damage 75%
       const dmg = atk.dmg * attacker.damageMult * defender.defenseMult * blockMult;
       defender.hp -= dmg;
-      defender.hitStun = HIT_STUN * (isHeavy ? 1.5 : isMedium ? 1.0 : 0.7);
-      defender.state = 'hit';
-      if (defender.mainSprite) { defender._hitFlash = 1; }
-      defender._squash = 0.75;
-      defender._squashV = 0.08;
-      defender.vx += (attacker.dir > 0 ? 1 : -1) * atk.kbx;
-      defender.vy = atk.kby;
+      if (isBlocked) {
+        defender.hitStun = 0;
+        defender.vx += (attacker.dir > 0 ? 1 : -1) * atk.kbx * 0.2;
+        defender.vy = atk.kby * 0.2;
+      } else {
+        defender.hitStun = HIT_STUN * (isHeavy ? 1.5 : isMedium ? 1.0 : 0.7);
+        defender.state = 'hit';
+        if (defender.mainSprite) { defender._hitFlash = 1; }
+        defender._squash = 0.75;
+        defender._squashV = 0.08;
+        defender.vx += (attacker.dir > 0 ? 1 : -1) * atk.kbx;
+        defender.vy = atk.kby;
 
-      const hitX = (attacker.x + defender.x) / 2;
-      const hitY = defender.y - FIGHTER_H * 0.5;
-      spawnHitEffect(hitX, hitY, isHeavy);
-      triggerShake(isHeavy ? 10 : isMedium ? 6 : 4);
+        const hitX = (attacker.x + defender.x) / 2;
+        const hitY = defender.y - FIGHTER_H * 0.5;
+        spawnHitEffect(hitX, hitY, isHeavy);
+        triggerShake(isHeavy ? 10 : isMedium ? 6 : 4);
+      }
 
       if (defender.hp <= 0) {
         defender.hp = 0;
