@@ -12,7 +12,7 @@ const MOVE_SPEED   = 5;
 const ATTACK_DMG   = 12;
 const SPECIAL_DMG  = 32;
 const ATTACK_RANGE = 95;
-const ATTACK_RANGE_Y = 120;
+const ATTACK_RANGE_Y = 50;
 const ATTACK_DUR   = 18;
 const ATTACK_CD    = 28;
 const SPECIAL_CD   = 58;
@@ -1742,7 +1742,8 @@ function buildFightScene(container) {
     // Check hit
     const dist = Math.abs(attacker.x - defender.x);
     const verticalDist = Math.abs(attacker.y - defender.y);
-    if (dist < atk.range && verticalDist < ATTACK_RANGE_Y && defender.state !== 'ko') {
+    const attackRangeY = isHeavy ? ATTACK_RANGE_Y * 2 : ATTACK_RANGE_Y;
+    if (dist < atk.range && verticalDist < attackRangeY && defender.state !== 'ko') {
       const blockMult = defender.blocking ? 0.25 : 1.0; // Block reduces damage 75%
       const dmg = atk.dmg * attacker.damageMult * defender.defenseMult * blockMult;
       defender.hp -= dmg;
