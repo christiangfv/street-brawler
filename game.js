@@ -81,6 +81,7 @@ let currentStage = null;
 
 let audioCtx = null;
 let musicNodes = [];
+let currentMusicGain = null; // Track gain node separately — survives musicNodes pruning
 let bgmPlaying = false;
 let musicSessionId = 0; // Incremented on every stopMusic to invalidate pending setTimeout callbacks
 
@@ -210,6 +211,11 @@ function resumeAudio() {
 function stopMusic() {
   bgmPlaying = false; // Set BEFORE incrementing session to stop any in-flight scheduleNote
   musicSessionId++; // Invalidate all pending scheduleNote callbacks
+  // Always disconnect the gain node — it can be pruned from musicNodes after 32 notes
+  if (currentMusicGain) {
+    try { currentMusicGain.disconnect(); } catch(e) {}
+    currentMusicGain = null;
+  }
   musicNodes.forEach(n => {
     try { n.stop(); } catch(e) {}
     try { n.disconnect(); } catch(e) {}
@@ -219,9 +225,12 @@ function stopMusic() {
 
 function playMenuMusic() {
   if (!audioCtx || bgmPlaying) return;
-  resumeAudio();
-  // Don't start music if AudioContext is suspended (will be started on user gesture)
-  if (audioCtx.state === 'suspended') return;
+  // Mark as playing BEFORE resumeAudio() to prevent double-start via .then() callback
+  // resumeAudio() may queue an async .then() that checks bgmPlaying
+  if (audioCtx.state === 'suspended') {
+    resumeAudio(); // .then() will call playMenuMusic() again once context runs
+    return;
+  }
   bgmPlaying = true;
   const mySession = musicSessionId; // Capture session at start
 
@@ -235,6 +244,7 @@ function playMenuMusic() {
   const gain = audioCtx.createGain();
   gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
   gain.connect(audioCtx.destination);
+  currentMusicGain = gain; // Track separately — survives musicNodes.splice pruning
   musicNodes.push(gain);
 
   let t = audioCtx.currentTime;
@@ -252,8 +262,8 @@ function playMenuMusic() {
     musicNodes.push(osc);
     t += noteDur;
     step++;
-    // Clean up old nodes
-    if (musicNodes.length > 32) musicNodes.splice(0, 16);
+    // Clean up old oscillator nodes (NOT the gain node — it's tracked separately)
+    if (musicNodes.length > 32) musicNodes.splice(1, 16); // start at 1 to preserve gain at [0]
     if (bgmPlaying && musicSessionId === mySession) setTimeout(scheduleNote, (noteDur * 1000) * 0.5);
   }
   scheduleNote();
@@ -262,7 +272,12 @@ function playMenuMusic() {
 function playVictoryMusic(onDone) {
   stopMusic();
   if (!audioCtx) { if (onDone) setTimeout(onDone, 2500); return; }
-  resumeAudio();
+  if (audioCtx.state === 'suspended') {
+    // Can't play fanfare on suspended context; just call onDone after delay
+    audioCtx.resume().catch(() => {});
+    if (onDone) setTimeout(onDone, 2500);
+    return;
+  }
   bgmPlaying = true;
   const mySession = musicSessionId;
 
@@ -272,10 +287,11 @@ function playVictoryMusic(onDone) {
   const gain = audioCtx.createGain();
   gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
   gain.connect(audioCtx.destination);
+  currentMusicGain = gain; // Track separately
   musicNodes.push(gain);
 
-  let t = audioCtx.currentTime + 0.3; // small delay
-  fanfare.forEach((freq, i) => {
+  let t = audioCtx.currentTime + 0.1; // small delay
+  fanfare.forEach((freq) => {
     const osc = audioCtx.createOscillator();
     osc.type = 'square';
     osc.frequency.setValueAtTime(freq, t);
@@ -286,20 +302,21 @@ function playVictoryMusic(onDone) {
     t += noteDur;
   });
 
-  const totalDur = (fanfare.length * noteDur + 0.3) * 1000;
+  const totalDur = (fanfare.length * noteDur + 0.1) * 1000;
   setTimeout(() => {
-    if (musicSessionId !== mySession) return; // aborted
+    if (musicSessionId !== mySession) return; // aborted — scene changed
     stopMusic();
     if (onDone) onDone();
-  }, totalDur + 600);
+  }, totalDur + 400);
 }
 
 function playFightMusic() {
   stopMusic();
   if (!audioCtx) return;
-  resumeAudio();
-  // Don't start music if AudioContext is suspended
-  if (audioCtx.state === 'suspended') return;
+  if (audioCtx.state === 'suspended') {
+    resumeAudio(); // .then() will call playFightMusic() once context is running
+    return;
+  }
   bgmPlaying = true;
   const mySession = musicSessionId; // Capture session AFTER stopMusic incremented it
 
@@ -311,6 +328,7 @@ function playFightMusic() {
   const gain = audioCtx.createGain();
   gain.gain.setValueAtTime(0.025, audioCtx.currentTime);
   gain.connect(audioCtx.destination);
+  currentMusicGain = gain; // Track separately — survives musicNodes.splice pruning
   musicNodes.push(gain);
 
   let t = audioCtx.currentTime;
@@ -328,7 +346,7 @@ function playFightMusic() {
     musicNodes.push(osc);
     t += noteDur;
     step++;
-    if (musicNodes.length > 32) musicNodes.splice(0, 16);
+    if (musicNodes.length > 32) musicNodes.splice(1, 16); // preserve gain at [0]
     if (bgmPlaying && musicSessionId === mySession) setTimeout(scheduleNote, (noteDur * 1000) * 0.5);
   }
   scheduleNote();
@@ -493,8 +511,7 @@ function makeButton(label, x, y, w, h, opts = {}) {
 // SCENE: MENU
 // ═══════════════════════════════════════════════════════════
 function buildMenuScene(container) {
-  // Always clean state before starting menu music — prevents silent menu if bgmPlaying was stale
-  stopMusic();
+  // showScene() already called stopMusic() — start fresh menu music
   playMenuMusic();
 
   // Background with parallax
@@ -688,7 +705,7 @@ function flashTransition(callback) {
 // SCENE: CHARACTER SELECT
 // ═══════════════════════════════════════════════════════════
 function buildSelectScene(container) {
-  stopMusic();
+  // showScene() already called stopMusic() — continue with menu music in character select
   playMenuMusic();
 
   fillScreen(container, textures['select_bg']);
@@ -1752,7 +1769,7 @@ function buildFightScene(container) {
 
   // ── Reset fighters for new round ───────────────────────────
   function resetFightersForNewRound() {
-    // Reset positions
+    // Reset all fighter state for a clean round start
     p1.x = W() * 0.25;
     p1.y = GROUND;
     p1.vx = 0;
@@ -1761,9 +1778,13 @@ function buildFightScene(container) {
     p1.state = 'idle';
     p1.attackTimer = 0;
     p1.attackCd = 0;
+    p1.specialCd = 0;
     p1.hitStun = 0;
     p1.blocking = false;
     p1.dir = 1;
+    p1._hitFlash = 0;
+    p1._squash = 1;
+    p1._squashV = 0;
     if (p1.container) {
       p1.container.rotation = 0;
       p1.container.x = p1.x;
@@ -1778,10 +1799,14 @@ function buildFightScene(container) {
     p2.state = 'idle';
     p2.attackTimer = 0;
     p2.attackCd = 0;
+    p2.specialCd = 0;
     p2.hitStun = 0;
     p2.blocking = false;
     p2.dir = -1;
     p2.aiTimer = 0;
+    p2._hitFlash = 0;
+    p2._squash = 1;
+    p2._squashV = 0;
     if (p2.container) {
       p2.container.rotation = 0;
       p2.container.x = p2.x;
