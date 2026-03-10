@@ -1686,7 +1686,7 @@ function buildFightScene(container) {
   const touchBtns = buildTouchControls(container);
 
   // ── AI logic ─────────────────────────────────────────────
-  function updateAI(dt) {
+  function updateAI(dt, queueAttack) {
     if (!p2.isAI || p2.state === 'ko' || p2.state === 'win') return;
     p2.aiTimer -= dt;
     if (p2.aiTimer > 0) return;
@@ -1704,12 +1704,12 @@ function buildFightScene(container) {
     } else {
       // In range: attack — AI uses all 6 moves
       if (p2.attackCd <= 0) {
-        if      (rand < 0.25) doAttack(p2, p1, 'LP');
-        else if (rand < 0.45) doAttack(p2, p1, 'MK');
-        else if (rand < 0.60) doAttack(p2, p1, 'MP');
-        else if (rand < 0.72) doAttack(p2, p1, 'HP');
-        else if (rand < 0.82) doAttack(p2, p1, 'LK');
-        else if (rand < 0.90) doAttack(p2, p1, 'HK');
+        if      (rand < 0.25) queueAttack(p2, p1, 'LP');
+        else if (rand < 0.45) queueAttack(p2, p1, 'MK');
+        else if (rand < 0.60) queueAttack(p2, p1, 'MP');
+        else if (rand < 0.72) queueAttack(p2, p1, 'HP');
+        else if (rand < 0.82) queueAttack(p2, p1, 'LK');
+        else if (rand < 0.90) queueAttack(p2, p1, 'HK');
         else {
           p2.vx = 0;
           if (p2.vy === 0 && Math.random() < 0.4) p2.vy = -12;
@@ -1723,11 +1723,20 @@ function buildFightScene(container) {
     }
   }
 
-  function doAttack(attacker, defender, attackType) {
+  function canAttack(attacker) {
+    return attacker.attackCd <= 0 && attacker.state !== 'hit' && attacker.state !== 'ko';
+  }
+
+  function queueAttackRequest(queue, attacker, defender, attackType) {
     const atk = ATTACKS[attackType];
-    if (!atk) return;
-    if (attacker.attackCd > 0) return;
-    if (attacker.state === 'hit' || attacker.state === 'ko') return;
+    if (!atk || !canAttack(attacker)) return;
+    if (queue.some((req) => req.attacker === attacker)) return;
+    queue.push({ attacker, defender, attackType });
+  }
+
+  function beginAttack(attacker, attackType) {
+    const atk = ATTACKS[attackType];
+    if (!atk) return null;
 
     const isHeavy  = attackType === 'HP' || attackType === 'HK';
     const isMedium = attackType === 'MP' || attackType === 'MK';
@@ -1739,42 +1748,77 @@ function buildFightScene(container) {
     if (isHeavy) playSFX('special');
     else playSFX('punch');
 
-    // Check hit
+    return { atk, isHeavy, isMedium };
+  }
+
+  function getAttackHit(attacker, defender, attackType) {
+    const atk = ATTACKS[attackType];
+    if (!atk) return null;
+    const isHeavy  = attackType === 'HP' || attackType === 'HK';
+    const isMedium = attackType === 'MP' || attackType === 'MK';
+
     const dist = Math.abs(attacker.x - defender.x);
     const verticalDist = Math.abs(attacker.y - defender.y);
     const attackRangeY = isHeavy ? ATTACK_RANGE_Y * 2 : ATTACK_RANGE_Y;
-    if (dist < atk.range && verticalDist < attackRangeY && defender.state !== 'ko') {
-      const isBlocked = defender.blocking;
-      const blockMult = isBlocked ? 0.25 : 1.0; // Block reduces damage 75%
-      const dmg = atk.dmg * attacker.damageMult * defender.defenseMult * blockMult;
-      defender.hp -= dmg;
-      if (isBlocked) {
-        defender.hitStun = 0;
-        defender.vx += (attacker.dir > 0 ? 1 : -1) * atk.kbx * 0.2;
-        defender.vy = atk.kby * 0.2;
-      } else {
-        defender.hitStun = HIT_STUN * (isHeavy ? 1.5 : isMedium ? 1.0 : 0.7);
-        defender.state = 'hit';
-        if (defender.mainSprite) { defender._hitFlash = 1; }
-        defender._squash = 0.75;
-        defender._squashV = 0.08;
-        defender.vx += (attacker.dir > 0 ? 1 : -1) * atk.kbx;
-        defender.vy = atk.kby;
+    if (dist >= atk.range || verticalDist >= attackRangeY || defender.state === 'ko') return null;
 
-        const hitX = (attacker.x + defender.x) / 2;
-        const hitY = defender.y - FIGHTER_H * 0.5;
-        spawnHitEffect(hitX, hitY, isHeavy);
-        triggerShake(isHeavy ? 10 : isMedium ? 6 : 4);
-      }
+    const isBlocked = defender.blocking;
+    const blockMult = isBlocked ? 0.25 : 1.0; // Block reduces damage 75%
+    const dmg = atk.dmg * attacker.damageMult * defender.defenseMult * blockMult;
+    return { atk, dmg, isBlocked, isHeavy, isMedium };
+  }
 
-      if (defender.hp <= 0) {
-        defender.hp = 0;
-        defender.state = 'ko';
-        triggerShake(15);
-        playSFX('ko');
-        endRound(attacker === p1 ? 1 : 2);
-      }
+  function applyAttackHit(attacker, defender, hit) {
+    if (!hit) return;
+    defender.hp -= hit.dmg;
+    if (hit.isBlocked) {
+      defender.hitStun = 0;
+      defender.vx += (attacker.dir > 0 ? 1 : -1) * hit.atk.kbx * 0.2;
+      defender.vy = hit.atk.kby * 0.2;
+      return;
     }
+
+    defender.hitStun = HIT_STUN * (hit.isHeavy ? 1.5 : hit.isMedium ? 1.0 : 0.7);
+    defender.state = 'hit';
+    if (defender.mainSprite) { defender._hitFlash = 1; }
+    defender._squash = 0.75;
+    defender._squashV = 0.08;
+    defender.vx += (attacker.dir > 0 ? 1 : -1) * hit.atk.kbx;
+    defender.vy = hit.atk.kby;
+
+    const hitX = (attacker.x + defender.x) / 2;
+    const hitY = defender.y - FIGHTER_H * 0.5;
+    spawnHitEffect(hitX, hitY, hit.isHeavy);
+    triggerShake(hit.isHeavy ? 10 : hit.isMedium ? 6 : 4);
+  }
+
+  function resolveAttackQueue(queue) {
+    if (queue.length === 0) return;
+
+    const resolved = queue.map((req) => {
+      beginAttack(req.attacker, req.attackType);
+      return { ...req, hit: getAttackHit(req.attacker, req.defender, req.attackType) };
+    });
+
+    resolved.forEach((req) => applyAttackHit(req.attacker, req.defender, req.hit));
+
+    const koFighters = [p1, p2].filter((fighter) => fighter.hp <= 0);
+    if (koFighters.length === 0) return;
+
+    koFighters.forEach((fighter) => {
+      fighter.hp = 0;
+      fighter.state = 'ko';
+    });
+
+    triggerShake(15);
+    playSFX('ko');
+
+    if (koFighters.length === 1) {
+      endRound(koFighters[0] === p1 ? 2 : 1);
+      return;
+    }
+
+    endRound(p1.hp >= p2.hp ? 1 : 2);
   }
 
   // ── Reset fighters for new round ───────────────────────────
@@ -1901,6 +1945,10 @@ function buildFightScene(container) {
     }
 
     const dt = tk.deltaTime;
+    const attackQueue = [];
+    const queueAttack = (attacker, defender, attackType) => {
+      queueAttackRequest(attackQueue, attacker, defender, attackType);
+    };
 
     if (!roundOver) {
       // Timer
@@ -1945,12 +1993,12 @@ function buildFightScene(container) {
 
         // 6-button SF layout — P1: U/I/O = LP/MP/HP, J/K/L = LK/MK/HK
         if (!p1.blocking) {
-          if ((keys['u'] || keys['U'] || touchBtns.lp) && p1.attackCd <= 0) doAttack(p1, p2, 'LP');
-          if ((keys['i'] || keys['I'] || touchBtns.mp) && p1.attackCd <= 0) doAttack(p1, p2, 'MP');
-          if ((keys['o'] || keys['O'] || touchBtns.hp) && p1.attackCd <= 0) doAttack(p1, p2, 'HP');
-          if ((keys['j'] || keys['J'] || touchBtns.lk) && p1.attackCd <= 0) doAttack(p1, p2, 'LK');
-          if ((keys['k'] || keys['K'] || touchBtns.mk) && p1.attackCd <= 0) doAttack(p1, p2, 'MK');
-          if ((keys['l'] || keys['L'] || touchBtns.hk) && p1.attackCd <= 0) doAttack(p1, p2, 'HK');
+          if ((keys['u'] || keys['U'] || touchBtns.lp) && p1.attackCd <= 0) queueAttack(p1, p2, 'LP');
+          if ((keys['i'] || keys['I'] || touchBtns.mp) && p1.attackCd <= 0) queueAttack(p1, p2, 'MP');
+          if ((keys['o'] || keys['O'] || touchBtns.hp) && p1.attackCd <= 0) queueAttack(p1, p2, 'HP');
+          if ((keys['j'] || keys['J'] || touchBtns.lk) && p1.attackCd <= 0) queueAttack(p1, p2, 'LK');
+          if ((keys['k'] || keys['K'] || touchBtns.mk) && p1.attackCd <= 0) queueAttack(p1, p2, 'MK');
+          if ((keys['l'] || keys['L'] || touchBtns.hk) && p1.attackCd <= 0) queueAttack(p1, p2, 'HK');
         }
 
         if (!moving && p1.y >= GROUND - 2) {
@@ -1978,12 +2026,12 @@ function buildFightScene(container) {
           p2.state = 'jump';
         }
         // P2: numrow 7/8/9 = LP/MP/HP, 4/5/6 = LK/MK/HK
-        if (keys['7'] && p2.attackCd <= 0) doAttack(p2, p1, 'LP');
-        if (keys['8'] && p2.attackCd <= 0) doAttack(p2, p1, 'MP');
-        if (keys['9'] && p2.attackCd <= 0) doAttack(p2, p1, 'HP');
-        if (keys['4'] && p2.attackCd <= 0) doAttack(p2, p1, 'LK');
-        if (keys['5'] && p2.attackCd <= 0) doAttack(p2, p1, 'MK');
-        if (keys['6'] && p2.attackCd <= 0) doAttack(p2, p1, 'HK');
+        if (keys['7'] && p2.attackCd <= 0) queueAttack(p2, p1, 'LP');
+        if (keys['8'] && p2.attackCd <= 0) queueAttack(p2, p1, 'MP');
+        if (keys['9'] && p2.attackCd <= 0) queueAttack(p2, p1, 'HP');
+        if (keys['4'] && p2.attackCd <= 0) queueAttack(p2, p1, 'LK');
+        if (keys['5'] && p2.attackCd <= 0) queueAttack(p2, p1, 'MK');
+        if (keys['6'] && p2.attackCd <= 0) queueAttack(p2, p1, 'HK');
 
         if (!moving && p2.y >= GROUND - 2) {
           p2.vx *= 0.7;
@@ -1992,7 +2040,9 @@ function buildFightScene(container) {
       }
 
       // AI
-      if (p2.isAI) updateAI(dt);
+      if (p2.isAI) updateAI(dt, queueAttack);
+
+      resolveAttackQueue(attackQueue);
 
       // Physics for both fighters
       [p1, p2].forEach(f => {
