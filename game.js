@@ -85,6 +85,11 @@ let musicNodes = [];
 let currentMusicGain = null; // Track gain node separately — survives musicNodes pruning
 let bgmPlaying = false;
 let musicSessionId = 0; // Incremented on every stopMusic to invalidate pending setTimeout callbacks
+let currentMusicVolume = 0;
+let isMuted = false;
+let muteButton = null;
+let muteButtonBg = null;
+let muteButtonLabel = null;
 
 // ─── Loading bar helper ──────────────────────────────────────
 function setLoading(pct, msg) {
@@ -107,6 +112,7 @@ async function init() {
     autoDensity: true,
   });
   document.body.appendChild(app.canvas);
+  app.stage.sortableChildren = true;
 
   setLoading(20, 'Loading backgrounds...');
 
@@ -173,6 +179,7 @@ async function init() {
 
   // Start music
   initAudio();
+  createMuteButton();
 
   // Start with menu
   showScene(SCENES.MENU);
@@ -224,6 +231,65 @@ function stopMusic() {
   musicNodes = [];
 }
 
+function applyCurrentMusicVolume() {
+  if (!audioCtx || !currentMusicGain) return;
+  currentMusicGain.gain.cancelScheduledValues(audioCtx.currentTime);
+  currentMusicGain.gain.setValueAtTime(isMuted ? 0 : currentMusicVolume, audioCtx.currentTime);
+}
+
+function setCurrentMusicGain(gainNode, volume) {
+  currentMusicGain = gainNode;
+  currentMusicVolume = volume;
+  applyCurrentMusicVolume();
+}
+
+function updateMuteButton() {
+  if (!muteButtonBg || !muteButtonLabel) return;
+  muteButtonBg.clear();
+  muteButtonBg.roundRect(0, 0, 40, 40, 10);
+  muteButtonBg.fill({ color: 0x000000, alpha: 0.5 });
+  muteButtonBg.stroke({ color: 0xffffff, alpha: 0.35, width: 1.5 });
+  muteButtonLabel.text = isMuted ? '🔇' : '🔊';
+}
+
+function positionMuteButton() {
+  if (!muteButton) return;
+  muteButton.x = W() - 50;
+  muteButton.y = 20;
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+  applyCurrentMusicVolume();
+  updateMuteButton();
+}
+
+function createMuteButton() {
+  muteButton = new PIXI.Container();
+  muteButton.zIndex = 100;
+  muteButton.eventMode = 'static';
+  muteButton.cursor = 'pointer';
+  muteButtonBg = new PIXI.Graphics();
+  muteButtonLabel = makeText('🔊', { size: 20, color: 0xffffff });
+  muteButtonLabel.anchor.set(0.5);
+  muteButtonLabel.x = 20;
+  muteButtonLabel.y = 20;
+
+  muteButton.addChild(muteButtonBg, muteButtonLabel);
+  muteButton.on('pointerdown', (e) => {
+    e.stopPropagation();
+    toggleMute();
+  });
+  muteButton.on('pointertap', (e) => {
+    e.stopPropagation();
+  });
+
+  positionMuteButton();
+  updateMuteButton();
+  app.stage.addChild(muteButton);
+  app.renderer.on?.('resize', positionMuteButton);
+}
+
 function playMenuMusic() {
   if (!audioCtx || bgmPlaying) return;
   // Mark as playing BEFORE resumeAudio() to prevent double-start via .then() callback
@@ -243,9 +309,8 @@ function playMenuMusic() {
   ];
   const noteDur = 0.15;
   const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
   gain.connect(audioCtx.destination);
-  currentMusicGain = gain; // Track separately — survives musicNodes.splice pruning
+  setCurrentMusicGain(gain, 0.015); // Track separately — survives musicNodes.splice pruning
   musicNodes.push(gain);
 
   let t = audioCtx.currentTime;
@@ -286,9 +351,8 @@ function playVictoryMusic(onDone) {
   const fanfare = [523, 659, 784, 1047, 784, 1047, 1319, 1047, 1319];
   const noteDur = 0.14;
   const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
   gain.connect(audioCtx.destination);
-  currentMusicGain = gain; // Track separately
+  setCurrentMusicGain(gain, 0.02); // Track separately
   musicNodes.push(gain);
 
   let t = audioCtx.currentTime + 0.1; // small delay
@@ -327,9 +391,8 @@ function playFightMusic() {
   ];
   const noteDur = 0.12;
   const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0.025, audioCtx.currentTime);
   gain.connect(audioCtx.destination);
-  currentMusicGain = gain; // Track separately — survives musicNodes.splice pruning
+  setCurrentMusicGain(gain, 0.0125); // Track separately — survives musicNodes.splice pruning
   musicNodes.push(gain);
 
   let t = audioCtx.currentTime;
@@ -406,6 +469,7 @@ function showScene(scene) {
   // Reset any lingering screen shake from fight scene
   app.stage.position.set(0, 0);
   sceneContainer = new PIXI.Container();
+  sceneContainer.zIndex = 0;
   app.stage.addChild(sceneContainer);
   currentScene = scene;
 
@@ -686,6 +750,7 @@ function flashTransition(callback) {
   const flash = new PIXI.Graphics();
   flash.rect(0, 0, W(), H()).fill({ color: 0xffffff, alpha: 1 });
   flash.alpha = 1;
+  flash.zIndex = 50;
   app.stage.addChild(flash);
 
   callback();
